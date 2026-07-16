@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: yuwen-sucai
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    disk:
+      name: data
+      mountPath: /opt/render/project/src
+      sizeGB: 1

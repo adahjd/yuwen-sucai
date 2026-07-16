@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <title>语文素材库</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部导航 -->
+    <header class="topbar">
+      <h1 class="logo">📚 语文素材库</h1>
+      <div class="topbar-actions">
+        <button id="btn-add" class="btn btn-primary" title="添加素材">＋ 新增</button>
+        <button id="btn-settings" class="btn btn-icon" title="设置">⚙️</button>
+      </div>
+    </header>
+
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="搜索素材标题、内容…" autocomplete="off">
+        <button id="btn-clear-search" class="btn-clear" style="display:none">✕</button>
+      </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="main-layout">
+      <!-- 侧边栏：分类 -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <span>📂 分类</span>
+          <span id="category-count" class="badge">0</span>
+        </div>
+        <nav class="category-nav" id="category-nav">
+          <a href="#" class="category-item active" data-category="">📋 全部</a>
+        </nav>
+      </aside>
+
+      <!-- 素材列表 -->
+      <section class="material-list" id="material-list">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>还没有素材，点击右上角「＋ 新增」来添加第一条吧</p>
+        </div>
+      </section>
+
+      <!-- 详情/编辑面板 -->
+      <aside class="detail-panel" id="detail-panel" style="display:none">
+        <div class="panel-header">
+          <h3 id="panel-title">素材详情</h3>
+          <button class="btn btn-icon btn-close-panel" title="关闭">✕</button>
+        </div>
+        <div class="panel-body" id="panel-body"></div>
+      </aside>
+    </main>
+
+    <!-- 移动端底部导航 -->
+    <nav class="mobile-nav" id="mobile-nav">
+      <button class="nav-item active" data-tab="list">📋 列表</button>
+      <button class="nav-item" data-tab="categories">📂 分类</button>
+      <button class="nav-item" data-tab="settings">⚙️ 设置</button>
+    </nav>
+
+    <!-- 设置面板 -->
+    <div class="modal-overlay" id="settings-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>⚙️ 设置</h3>
+          <button class="btn btn-icon modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="settings-section">
+            <h4>📤 导出数据</h4>
+            <p class="settings-hint">将所有素材导出为 JSON 文件</p>
+            <button id="btn-export" class="btn btn-outline btn-block">下载 JSON</button>
+          </div>
+          <div class="settings-section">
+            <h4>📥 导入数据</h4>
+            <p class="settings-hint">从 JSON 文件批量导入素材（自动去重）</p>
+            <input type="file" id="import-file" accept=".json" style="display:none">
+            <button id="btn-import" class="btn btn-outline btn-block">选择文件导入</button>
+          </div>
+          <div class="settings-section">
+            <h4>ℹ️ 关于</h4>
+            <p class="settings-hint">语文素材库 v1.0 · 数据存储于本地</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" style="display:none"></div>
+
+    <!-- 新增/编辑弹窗 -->
+    <div class="modal-overlay" id="edit-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="edit-modal-title">新增素材</h3>
+          <button class="btn btn-icon modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="edit-form">
+            <div class="form-group">
+              <label for="edit-title">标题 <span class="required">*</span></label>
+              <input type="text" id="edit-title" required placeholder="例如：关于坚持的名言">
+            </div>
+            <div class="form-group">
+              <label for="edit-content">内容 <span class="required">*</span></label>
+              <textarea id="edit-content" rows="5" required placeholder="素材正文…"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="edit-category">分类</label>
+                <select id="edit-category">
+                  <option value="名言警句">名言警句</option>
+                  <option value="好词好句">好词好句</option>
+                  <option value="诗词名句">诗词名句</option>
+                  <option value="人物事例">人物事例</option>
+                  <option value="时事热点">时事热点</option>
+                  <option value="哲理故事">哲理故事</option>
+                  <option value="优美段落">优美段落</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="edit-tags">标签（逗号分隔）</label>
+                <input type="text" id="edit-tags" placeholder="例如：坚持, 励志, 名言">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="edit-source">出处/来源</label>
+              <input type="text" id="edit-source" placeholder="例如：《论语》">
+            </div>
+            <div class="form-group">
+              <label for="edit-notes">备注</label>
+              <textarea id="edit-notes" rows="2" placeholder="个人笔记…"></textarea>
+            </div>
+            <input type="hidden" id="edit-id">
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline modal-close">取消</button>
+              <button type="submit" class="btn btn-primary">保存</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal-overlay" id="delete-modal" style="display:none">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h3>⚠️ 确认删除</h3>
+        </div>
+        <div class="modal-body">
+          <p>确定要删除这条素材吗？此操作不可撤销。</p>
+          <div class="form-actions">
+            <button class="btn btn-outline modal-close">取消</button>
+            <button id="btn-confirm-delete" class="btn btn-danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 详情查看弹窗 -->
+    <div class="modal-overlay" id="detail-modal" style="display:none">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="detail-modal-title">素材详情</h3>
+          <button class="btn btn-icon modal-close">✕</button>
+        </div>
+        <div class="modal-body" id="detail-modal-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
