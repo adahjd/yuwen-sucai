@@ -5,7 +5,3 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     plan: free
-    disk:
-      name: data
-      mountPath: /opt/render/project/src
-      sizeGB: 1
