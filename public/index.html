@@ -2,43 +2,49 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>语文素材库</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--primary:#4f46e5;--ph:#4338ca;--danger:#ef4444;--dh:#dc2626;--bg:#f8fafc;--bgc:#fff;--bgs:#f1f5f9;--t:#1e293b;--ts:#64748b;--b:#e2e8f0;--r:10px;--rs:6px;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.1)}
-html{font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);line-height:1.6;min-height:100vh;overflow-x:hidden;padding-bottom:60px}
-.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:var(--bgc);border-bottom:1px solid var(--b)}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);line-height:1.6;min-height:100vh;min-height:100dvh;overflow-x:hidden;padding-bottom:60px;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;padding-top:env(safe-area-inset-top);background:var(--bgc);border-bottom:1px solid var(--b);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .logo{font-size:1.1rem;font-weight:700}
-.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:var(--rs);font-size:.88rem;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bgc);color:var(--t)}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:var(--rs);font-size:.88rem;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bgc);color:var(--t);min-height:36px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn:active{transform:scale(.96)}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-primary:hover{background:var(--ph)}
+.btn-primary:active{background:var(--ph)}
 .btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover{background:var(--dh)}
 .btn-outline{background:var(--bgc);border:1px solid var(--b)}
 .btn-outline:hover{background:var(--bg)}
-.btn-icon{background:none;padding:6px 8px;font-size:1.1rem;color:var(--ts)}
+.btn-icon{background:none;padding:8px;font-size:1.1rem;color:var(--ts);min-width:36px}
 .btn-icon:hover{color:var(--t)}
 .btn-block{width:100%;justify-content:center}
-.btn-sm{padding:4px 8px;font-size:.78rem}
+.btn-sm{padding:4px 8px;font-size:.78rem;min-height:28px}
 .search-bar{position:sticky;top:52px;z-index:99;padding:6px 14px;background:var(--bg)}
 .search-wrap{display:flex;align-items:center;gap:8px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--r);padding:0 10px}
-.search-wrap input{flex:1;border:none;outline:none;padding:9px 0;font-size:.92rem;background:transparent}
-.main-layout{display:grid;grid-template-columns:180px 1fr;min-height:calc(100vh - 104px)}
-.sidebar{background:var(--bgs);border-right:1px solid var(--b);padding:10px;overflow-y:auto}
+.search-wrap input{flex:1;border:none;outline:none;padding:9px 0;font-size:.92rem;background:transparent;-webkit-appearance:none}
+.main-layout{display:grid;grid-template-columns:180px 1fr;min-height:calc(100vh - 104px);min-height:calc(100dvh - 104px)}
+.sidebar{background:var(--bgs);border-right:1px solid var(--b);padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sidebar-header{display:flex;align-items:center;justify-content:space-between;padding:0 6px 6px;font-size:.82rem;font-weight:600;color:var(--ts)}
 .badge{background:var(--primary);color:#fff;font-size:.68rem;padding:2px 8px;border-radius:10px}
 .category-nav{display:flex;flex-direction:column;gap:1px}
-.cat-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--rs);text-decoration:none;color:var(--t);font-size:.88rem;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left}
+.cat-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--rs);text-decoration:none;color:var(--t);font-size:.88rem;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left;-webkit-tap-highlight-color:transparent;min-height:36px}
+.cat-item:active{background:rgba(0,0,0,.08)}
 .cat-item:hover{background:rgba(0,0,0,.05)}
 .cat-item.active{background:var(--primary);color:#fff}
 .cat-item .count{font-size:.72rem;margin-left:auto;opacity:.7}
-.material-list{padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.material-list{padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px}
 .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 16px;color:var(--ts);text-align:center}
 .empty-icon{font-size:3rem;margin-bottom:10px}
-.card{background:var(--bgc);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);cursor:pointer;position:relative}
+.card{background:var(--bgc);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);cursor:pointer;position:relative;transition:box-shadow .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border:1px solid transparent}
+.card:active{transform:scale(.985);border-color:var(--b)}
 .card:hover{box-shadow:var(--shm)}
 .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
 .card-title{font-weight:600;font-size:.92rem;flex:1;word-break:break-all}
@@ -50,31 +56,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .card-source{margin-top:4px;font-size:.78rem;color:var(--ts)}
 .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--bgc);border-radius:var(--r);box-shadow:var(--shm);width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal{background:var(--bgc);border-radius:var(--r);box-shadow:var(--shm);width:100%;max-width:500px;max-height:90vh;max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--bgc);z-index:5}
 .modal-header h3{font-size:1rem}
 .modal-body{padding:16px 18px}
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:.82rem;font-weight:500;margin-bottom:3px}
-.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--b);border-radius:var(--rs);font-size:.88rem;font-family:inherit;background:var(--bgc)}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--b);border-radius:var(--rs);font-size:.88rem;font-family:inherit;background:var(--bgc);-webkit-appearance:none;transition:border-color .15s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .required{color:var(--danger)}
 .form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 22px;border-radius:20px;font-size:.88rem;z-index:300;display:none;animation:toastIn .25s ease}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 22px;border-radius:20px;font-size:.88rem;z-index:300;display:none;animation:toastIn .25s ease;pointer-events:none}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;height:56px;background:var(--bgc);border-top:1px solid var(--b)}
-.mobile-nav button{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:none;border:none;font-size:.84rem;color:var(--ts);cursor:pointer}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;height:56px;padding-bottom:env(safe-area-inset-bottom);background:var(--bgc);border-top:1px solid var(--b);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mobile-nav button{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:none;border:none;font-size:.84rem;color:var(--ts);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:44px}
+.mobile-nav button:active{color:var(--primary)}
 .mobile-nav button.active{color:var(--primary);font-weight:600}
 .text-muted{color:var(--ts);font-size:.82rem}
 .mt-2{margin-top:6px}
 @media(max-width:768px){
   .main-layout{grid-template-columns:1fr}
   .sidebar{display:none}
-  .sidebar.show{display:block;position:fixed;inset:0;top:52px;z-index:150;padding-top:6px}
+  .sidebar.show{display:block;position:fixed;inset:0;top:52px;z-index:150;padding-top:6px;padding-bottom:60px}
   .mobile-nav{display:flex}
   .form-row{grid-template-columns:1fr}
-  body{padding-bottom:56px}
+  .topbar{padding:0 12px;height:48px}
+  .logo{font-size:1rem}
+  .btn{padding:8px 14px;font-size:.84rem;min-height:38px}
+  .btn-primary{padding:8px 14px;font-size:.82rem}
+  .search-bar{top:48px;padding:6px 10px}
+  .search-wrap{border-radius:8px;padding:0 8px}
+  .search-wrap input{padding:10px 0;font-size:1rem}
+  .card{padding:14px;border-radius:8px}
+  .card-title{font-size:.98rem}
+  .card-preview{font-size:.9rem;-webkit-line-clamp:3}
+  .card-cat{font-size:.75rem;padding:3px 10px}
+  .card-tag{font-size:.72rem;padding:2px 8px}
+  .material-list{padding:8px;gap:10px}
+  .modal{border-radius:16px 16px 0 0;max-height:85dvh;position:fixed;bottom:0;left:0;right:0;max-width:100%;margin:0}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-header{border-radius:16px 16px 0 0}
+  .form-group input,.form-group textarea,.form-group select{font-size:1rem;padding:10px 12px}
+  .form-group label{font-size:.88rem}
+  .toast{bottom:70px;font-size:.85rem;padding:10px 20px}
+  .sync-status{font-size:.7rem}
+  .btn-icon{padding:10px;min-width:40px}
+  body{padding-bottom:56px;padding-bottom:calc(56px + env(safe-area-inset-bottom))}
 }
 @media(min-width:769px)and(max-width:1024px){.main-layout{grid-template-columns:160px 1fr}}
 .settings-section{margin-bottom:20px}
@@ -83,7 +111,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .modal-sm{max-width:340px}
 .import-hint{font-size:.78rem;color:var(--ts);margin-top:4px}
 .sync-status{font-size:.75rem;color:var(--ts);display:flex;align-items:center;gap:4px}
-.sync-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.sync-dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
 .sync-dot.online{background:#22c55e}
 .sync-dot.offline{background:#ef4444}
 </style>
@@ -101,7 +129,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="search-bar">
     <div class="search-wrap">
       <span>🔍</span>
-      <input type="text" id="search" placeholder="搜索素材…" oninput="render()">
+      <input type="text" id="search" placeholder="搜索素材…" oninput="render()" enterkeyhint="search">
       <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">✕</button>
     </div>
   </div>
@@ -189,18 +217,82 @@ let currentCat = '';
 let editId = null;
 let syncTimer = null;
 
+// ===== Seed data from real 高考 essay themes =====
+const SEED_DATA = [
+  {
+    id: 'seed1',
+    title: '坦诚交流——2024全国甲卷作文素材',
+    content: '真正的沟通不在于说多少话，而在于是否敢于袒露真实的自己。坦诚交流是人与人之间最珍贵的桥梁，它让我们超越误解、跨越隔阂。正如古人所言："君子和而不同，小人同而不和。"学会坦诚，就是学会在尊重差异的前提下勇敢表达。',
+    category: '名言警句',
+    tags: ['沟通', '坦诚', '人际关系', '高考2024'],
+    source: '2024年全国甲卷作文题"相处之道"',
+    notes: '适用于议论文中关于人际关系、沟通艺术的论证',
+    created_at: '2026-07-20 12:00:00',
+    updated_at: '2026-07-20 12:00:00'
+  },
+  {
+    id: 'seed2',
+    title: '人类探索精神的典范——中国航天事业',
+    content: '从"嫦娥四号"揭开月背神秘面纱，到"天问一号"踏上火星探测之旅，再到"嫦娥五号"实现地外天体采样返回，中国航天人用一次次壮举证明：人类的探索精神永无止境。正如科学家卡尔·萨根所说："在某个地方，有令人难以置信的事等待被发现。"这种探索未知的勇气，正是推动人类文明前行的根本动力。每一次向太空的凝视，都是对未知世界的深情叩问。',
+    category: '人物事例',
+    tags: ['航天', '探索', '创新', '高考2024'],
+    source: '2024年新课标II卷作文题"探索未知"',
+    notes: '可用于科技发展、创新精神、人类探索等主题',
+    created_at: '2026-07-20 12:01:00',
+    updated_at: '2026-07-20 12:01:00'
+  },
+  {
+    id: 'seed3',
+    title: 'AI时代：问题会变少吗？',
+    content: '随着ChatGPT等人工智能工具的普及，我们似乎能在几秒钟内获得任何问题的答案。但问题的本质不在于答案的多少，而在于提出问题的能力。爱因斯坦曾说："提出一个问题往往比解决一个问题更重要。"当机器能够回答一切已知问题时，人类最宝贵的能力恰恰是提出那些机器从未想过的新问题。AI不是问题的终结者，而是激发更深层思考的催化剂。',
+    category: '时事热点',
+    tags: ['AI', '人工智能', '思辨', '高考2024'],
+    source: '2024年新课标I卷作文题"问题"',
+    notes: '辩证思考技术与人类关系，适合议论文',
+    created_at: '2026-07-20 12:02:00',
+    updated_at: '2026-07-20 12:02:00'
+  },
+  {
+    id: 'seed4',
+    title: '本手·妙手·俗手——围棋中的智慧',
+    content: '围棋中有"本手、妙手、俗手"之说。本手是合乎棋理的正规下法，妙手是出人意料的精妙之着，俗手则是貌似合理实则受损的庸常之着。人生如棋，学习如棋。唯有扎实练好本手，才能厚积薄发，偶得妙手；如果急功近利、好高骛远，追求表面的华丽而忽视基本功的积累，终将落入俗手之境。万丈高楼平地起，真正的成功从来都建立在日复一日的扎实努力之上。',
+    category: '哲理故事',
+    tags: ['围棋', '积累', '成功', '高考2022'],
+    source: '2022年新课标I卷作文题"本手、妙手、俗手"',
+    notes: '适用于勤奋、积累、成长、务实等主题论证',
+    created_at: '2026-07-20 12:03:00',
+    updated_at: '2026-07-20 12:03:00'
+  },
+  {
+    id: 'seed5',
+    title: '故事的力量——好故事改变世界',
+    content: '好的故事是有力量的。它可以穿越时间的长河，跨越空间的阻隔，将一代又一代人的情感与智慧传递下去。从《诗经》的"关关雎鸠"到鲁迅的"呐喊"，从司马迁的《史记》到路遥的《平凡的世界》，每一个打动人心的故事，都是一扇通往理解与共情的窗。故事让我们看见他人，也看清自己；故事让个体经验变成集体记忆，让瞬间的感动沉淀为永恒的财富。在这个快节奏的时代，我们比任何时候都更需要好的故事。',
+    category: '优美段落',
+    tags: ['故事', '文学', '表达', '高考2023'],
+    source: '2023年新课标I卷作文题"故事的力量"',
+    notes: '可用于议论文开头或结尾段的优美表达',
+    created_at: '2026-07-20 12:04:00',
+    updated_at: '2026-07-20 12:04:00'
+  }
+];
+
 function load() {
-  try { materials = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-  catch { materials = []; }
+  try {
+    materials = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch { materials = []; }
+  // Seed if empty
+  if (materials.length === 0) {
+    materials = [...SEED_DATA];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(materials));
+  }
 }
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(materials));
   scheduleCloudSync();
 }
 
-// ===== Cloud Sync =====
 function setSyncStatus(status, text) {
-  const dot = document.getElementById('syncDot');
+  var dot = document.getElementById('syncDot');
   dot.className = 'sync-dot ' + status;
   document.getElementById('syncStatus').innerHTML = dot.outerHTML + ' ' + text;
 }
@@ -213,19 +305,14 @@ function scheduleCloudSync() {
 async function cloudSync() {
   try {
     setSyncStatus('online', '同步中…');
-    const resp = await fetch(API + '/sync', {
+    var resp = await fetch(API + '/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(materials)
     });
-    if (resp.ok) {
-      setSyncStatus('online', '云端已同步');
-    } else {
-      setSyncStatus('offline', '同步失败');
-    }
-  } catch (e) {
-    setSyncStatus('offline', '云端离线');
-  }
+    if (resp.ok) { setSyncStatus('online', '云端已同步'); }
+    else { setSyncStatus('offline', '同步失败'); }
+  } catch (e) { setSyncStatus('offline', '云端离线'); }
 }
 
 async function forceCloudSync() {
@@ -235,70 +322,64 @@ async function forceCloudSync() {
 
 async function cloudLoad() {
   try {
-    const resp = await fetch(API);
+    var resp = await fetch(API);
     if (!resp.ok) return;
-    const cloudData = await resp.json();
+    var cloudData = await resp.json();
     if (!Array.isArray(cloudData) || cloudData.length === 0) return;
-
-    // Merge: cloud data takes precedence for matching IDs
-    const localMap = {};
-    materials.forEach(m => localMap[m.id] = m);
-    cloudData.forEach(m => {
-      localMap[m.id] = m;
-    });
+    var localMap = {};
+    materials.forEach(function(m) { localMap[m.id] = m; });
+    cloudData.forEach(function(m) { localMap[m.id] = m; });
     materials = Object.values(localMap);
-    save();
-    render();
+    save(); render();
     setSyncStatus('online', '云端已同步');
-  } catch (e) {
-    setSyncStatus('offline', '云端离线');
-  }
+  } catch (e) { setSyncStatus('offline', '云端离线'); }
 }
 
 function ts() { return new Date().toISOString().replace('T',' ').slice(0,19); }
 
 function render() {
-  const search = document.getElementById('search').value.trim().toLowerCase();
+  var search = document.getElementById('search').value.trim().toLowerCase();
   document.getElementById('clearSearch').style.display = search ? 'block' : 'none';
-  let items = materials;
-  if (currentCat) items = items.filter(m => m.category === currentCat);
-  if (search) items = items.filter(m =>
-    (m.title||'').toLowerCase().includes(search) || (m.content||'').toLowerCase().includes(search) ||
-    (m.source||'').toLowerCase().includes(search) || (m.notes||'').toLowerCase().includes(search)
-  );
-  items.sort((a,b) => b.updated_at.localeCompare(a.updated_at));
+  var items = materials;
+  if (currentCat) items = items.filter(function(m) { return m.category === currentCat; });
+  if (search) items = items.filter(function(m) {
+    return (m.title||'').toLowerCase().indexOf(search) >= 0 || (m.content||'').toLowerCase().indexOf(search) >= 0 ||
+      (m.source||'').toLowerCase().indexOf(search) >= 0 || (m.notes||'').toLowerCase().indexOf(search) >= 0;
+  });
+  items.sort(function(a,b) { return b.updated_at.localeCompare(a.updated_at); });
 
-  const list = document.getElementById('list');
+  var list = document.getElementById('list');
   if (items.length === 0) {
     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>还没有素材，点击右上角「＋ 新增」添加第一条</p></div>';
   } else {
-    list.innerHTML = items.map(m => `
-      <div class="card" onclick="viewDetail('${m.id}')">
-        <div class="card-header">
-          <span class="card-title">${esc(m.title)}</span>
-          <div class="card-actions" onclick="event.stopPropagation()">
-            <button class="btn btn-icon btn-sm" onclick="copyText('${m.id}')" title="复制">📋</button>
-          </div>
-        </div>
-        <div class="card-meta">
-          <span class="card-cat">${esc(m.category)}</span>
-          ${(m.tags||[]).map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}
-        </div>
-        <div class="card-preview">${esc(m.content)}</div>
-        ${m.source ? `<div class="card-source">📖 ${esc(m.source)}</div>` : ''}
-      </div>
-    `).join('');
+    list.innerHTML = items.map(function(m) {
+      return '<div class="card" onclick="viewDetail(\'' + m.id + '\')">' +
+        '<div class="card-header">' +
+        '<span class="card-title">' + esc(m.title) + '</span>' +
+        '<div class="card-actions" onclick="event.stopPropagation()">' +
+        '<button class="btn btn-icon btn-sm" onclick="copyText(\'' + m.id + '\')" title="复制">📋</button>' +
+        '</div></div>' +
+        '<div class="card-meta">' +
+        '<span class="card-cat">' + esc(m.category) + '</span>' +
+        ((m.tags||[]).map(function(t) { return '<span class="card-tag">' + esc(t) + '</span>'; }).join('')) +
+        '</div>' +
+        '<div class="card-preview">' + esc(m.content) + '</div>' +
+        (m.source ? '<div class="card-source">📖 ' + esc(m.source) + '</div>' : '') +
+        '</div>';
+    }).join('');
   }
 
-  const cats = [...new Set(materials.map(m => m.category))];
+  var cats = materials.map(function(m) { return m.category; }).filter(function(v,i,a) { return a.indexOf(v)===i; });
   document.getElementById('catCount').textContent = cats.length;
-  const preset = ['名言警句','好词好句','诗词名句','人物事例','时事热点','哲理故事','优美段落','其他'];
-  const ordered = preset.filter(c => cats.includes(c));
-  const others = cats.filter(c => !preset.includes(c));
-  const allCats = [...ordered, ...others];
-  document.getElementById('catNav').innerHTML =
-    `<button class="cat-item ${currentCat===''?'active':''}" onclick="filterCat('')">📋 全部 <span class="count">${materials.length}</span></button>` +
-    allCats.map(c => `<button class="cat-item ${currentCat===c?'active':''}" onclick="filterCat('${esc(c)}')">📌 ${esc(c)} <span class="count">${materials.filter(m=>m.category===c).length}</span></button>`).join('');
+  var preset = ['名言警句','好词好句','诗词名句','人物事例','时事热点','哲理故事','优美段落','其他'];
+  var ordered = preset.filter(function(c) { return cats.indexOf(c) >= 0; });
+  var others = cats.filter(function(c) { return preset.indexOf(c) < 0; });
+  var allCats = ordered.concat(others);
+  var catHtml = '<button class="cat-item ' + (currentCat===''?'active':'') + '" onclick="filterCat(\'\')">📋 全部 <span class="count">' + materials.length + '</span></button>';
+  allCats.forEach(function(c) {
+    catHtml += '<button class="cat-item ' + (currentCat===c?'active':'') + '" onclick="filterCat(\'' + esc(c) + '\')">📌 ' + esc(c) + ' <span class="count">' + materials.filter(function(m){return m.category===c;}).length + '</span></button>';
+  });
+  document.getElementById('catNav').innerHTML = catHtml;
 }
 
 function filterCat(cat) {
@@ -307,11 +388,11 @@ function filterCat(cat) {
   if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
 }
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+function esc(s) { var d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
 
 function openEdit(id) {
   editId = id || null;
-  const m = id ? materials.find(x => x.id === id) : null;
+  var m = id ? materials.find(function(x) { return x.id === id; }) : null;
   document.getElementById('editTitle').textContent = m ? '编辑素材' : '新增素材';
   document.getElementById('etitle').value = m ? m.title : '';
   document.getElementById('econtent').value = m ? m.content : '';
@@ -325,20 +406,20 @@ function openEdit(id) {
 
 function saveMaterial(e) {
   e.preventDefault();
-  const title = document.getElementById('etitle').value.trim();
-  const content = document.getElementById('econtent').value.trim();
+  var title = document.getElementById('etitle').value.trim();
+  var content = document.getElementById('econtent').value.trim();
   if (!title || !content) return toast('标题和内容不能为空');
-  const data = {
-    title, content,
+  var data = {
+    title: title, content: content,
     category: document.getElementById('ecat').value,
-    tags: document.getElementById('etags').value.split(/[,，]/).map(t=>t.trim()).filter(Boolean),
+    tags: document.getElementById('etags').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),
     source: document.getElementById('esource').value.trim(),
     notes: document.getElementById('enotes').value.trim(),
     updated_at: ts()
   };
   if (editId) {
-    const idx = materials.findIndex(m => m.id === editId);
-    if (idx >= 0) materials[idx] = { ...materials[idx], ...data };
+    var idx = materials.findIndex(function(m) { return m.id === editId; });
+    if (idx >= 0) { data.id = editId; data.created_at = materials[idx].created_at; materials[idx] = data; }
   } else {
     data.id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
     data.created_at = ts();
@@ -346,58 +427,59 @@ function saveMaterial(e) {
   }
   save(); render();
   closeModal('edit-modal');
-  toast(editId ? '已更新 ✅' : '已添加 ✅');
+  toast(editId ? '已更新' : '已添加');
 }
 
 function viewDetail(id) {
-  const m = materials.find(x => x.id === id);
+  var m = materials.find(function(x) { return x.id === id; });
   if (!m) return;
   document.getElementById('dtitle').textContent = m.title;
-  document.getElementById('dbody').innerHTML = `
-    <div class="form-group"><label>分类</label><div><span class="card-cat">${esc(m.category)}</span></div></div>
-    ${m.tags&&m.tags.length?`<div class="form-group"><label>标签</label><div>${m.tags.map(t=>`<span class="card-tag">${esc(t)}</span>`).join(' ')}</div></div>`:''}
-    <div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">${esc(m.content)}</div></div>
-    ${m.source?`<div class="form-group"><label>出处</label><div>${esc(m.source)}</div></div>`:''}
-    ${m.notes?`<div class="form-group"><label>备注</label><div>${esc(m.notes)}</div></div>`:''}
-    <div class="form-group"><label>更新时间</label><div class="text-muted">${m.updated_at}</div></div>
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-outline" onclick="copyText('${m.id}');closeModal('detail-modal')">📋 复制内容</button>
-      <button class="btn btn-primary" onclick="closeModal('detail-modal');openEdit('${m.id}')">✏️ 编辑</button>
-      <button class="btn btn-danger" onclick="closeModal('detail-modal');if(confirm('确定删除？')){materials=materials.filter(x=>x.id!=='${m.id}');save();render();toast('已删除')}">🗑 删除</button>
-    </div>
-  `;
+  var html = '<div class="form-group"><label>分类</label><div><span class="card-cat">' + esc(m.category) + '</span></div></div>';
+  if (m.tags && m.tags.length) {
+    html += '<div class="form-group"><label>标签</label><div>' + m.tags.map(function(t){return '<span class="card-tag">'+esc(t)+'</span>';}).join(' ') + '</div></div>';
+  }
+  html += '<div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">' + esc(m.content) + '</div></div>';
+  if (m.source) html += '<div class="form-group"><label>出处</label><div>' + esc(m.source) + '</div></div>';
+  if (m.notes) html += '<div class="form-group"><label>备注</label><div>' + esc(m.notes) + '</div></div>';
+  html += '<div class="form-group"><label>更新时间</label><div class="text-muted">' + m.updated_at + '</div></div>';
+  html += '<div style="display:flex;gap:8px;margin-top:16px">' +
+    '<button class="btn btn-outline" onclick="copyText(\'' + m.id + '\');closeModal(\'detail-modal\')">📋 复制</button>' +
+    '<button class="btn btn-primary" onclick="closeModal(\'detail-modal\');openEdit(\'' + m.id + '\')">✏️ 编辑</button>' +
+    '<button class="btn btn-danger" onclick="closeModal(\'detail-modal\');if(confirm(\'确定删除？\')){materials=materials.filter(function(x){return x.id!==\'' + m.id + '\';});save();render();toast(\'已删除\')}">🗑 删除</button>' +
+    '</div>';
+  document.getElementById('dbody').innerHTML = html;
   openModal('detail-modal');
 }
 
 async function copyText(id) {
-  const m = materials.find(x => x.id === id);
+  var m = materials.find(function(x) { return x.id === id; });
   if (!m) return;
-  try { await navigator.clipboard.writeText(m.content); toast('已复制 ✅'); }
-  catch { const ta=document.createElement('textarea');ta.value=m.content;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('已复制 ✅'); }
+  try { await navigator.clipboard.writeText(m.content); toast('已复制'); }
+  catch { var ta=document.createElement('textarea');ta.value=m.content;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('已复制'); }
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(materials,null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = `materials-${new Date().toISOString().slice(0,10)}.json`; a.click();
-  URL.revokeObjectURL(a.href); toast('导出成功 ✅');
+  var blob = new Blob([JSON.stringify(materials,null,2)],{type:'application/json'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'materials-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+  URL.revokeObjectURL(a.href); toast('导出成功');
 }
 
 function importData(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
+  var file = input.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
     try {
-      const items = JSON.parse(e.target.result);
+      var items = JSON.parse(e.target.result);
       if (!Array.isArray(items)) return toast('格式错误');
-      let added=0, skipped=0;
-      for (const item of items) {
-        if (materials.find(m => m.title===item.title && m.content===item.content)) { skipped++; continue; }
-        materials.push({...item, id: item.id || Date.now().toString(36)+Math.random().toString(36).slice(2,6), updated_at: ts()});
+      var added=0, skipped=0;
+      items.forEach(function(item) {
+        if (materials.find(function(m){return m.title===item.title && m.content===item.content;})) { skipped++; return; }
+        materials.push({id: item.id || Date.now().toString(36)+Math.random().toString(36).slice(2,6), title:item.title||'',content:item.content||'',category:item.category||'其他',tags:item.tags||[],source:item.source||'',notes:item.notes||'',created_at:item.created_at||ts(),updated_at:ts()});
         added++;
-      }
+      });
       save(); render(); closeModal('settings-modal');
-      toast(`导入完成：新增 ${added} 条，跳过 ${skipped} 条`);
+      toast('新增 ' + added + ' 条，跳过 ' + skipped + ' 条');
     } catch { toast('文件格式错误'); }
     input.value = '';
   };
@@ -411,32 +493,31 @@ function clearAll() {
 function openModal(id) { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-let toastTimer;
+var toastTimer;
 function toast(msg) {
-  const el = document.getElementById('toast');
+  var el = document.getElementById('toast');
   el.textContent = msg; el.style.display = 'block';
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.style.display = 'none', 1800);
+  toastTimer = setTimeout(function() { el.style.display = 'none'; }, 1800);
 }
 
 function switchTab(tab) {
-  document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
-  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-  const sidebar = document.getElementById('sidebar');
+  document.querySelectorAll('.mobile-nav button').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  var sidebar = document.getElementById('sidebar');
   if (tab === 'cats') sidebar.classList.add('show');
   else sidebar.classList.remove('show');
   if (tab === 'settings') openModal('settings-modal');
 }
 
-document.querySelectorAll('.modal-overlay').forEach(ov => {
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+document.querySelectorAll('.modal-overlay').forEach(function(ov) {
+  ov.addEventListener('click', function(e) { if (e.target === ov) ov.classList.remove('show'); });
 });
 
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); document.getElementById('search').focus(); }
 });
 
-// Init
 load(); render();
 setTimeout(cloudLoad, 1000);
 </script>
