@@ -1,185 +1,374 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#1a1a2e">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="/manifest.json">
-  <title>语文素材库</title>
-  <link rel="stylesheet" href="/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#4f46e5">
+<title>语文素材库</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#4f46e5;--ph:#4338ca;--danger:#ef4444;--dh:#dc2626;--bg:#f8fafc;--bgc:#fff;--bgs:#f1f5f9;--t:#1e293b;--ts:#64748b;--b:#e2e8f0;--r:10px;--rs:6px;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.1)}
+html{font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--t);line-height:1.6;min-height:100vh;overflow-x:hidden;padding-bottom:60px}
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:var(--bgc);border-bottom:1px solid var(--b)}
+.logo{font-size:1.1rem;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 14px;border:none;border-radius:var(--rs);font-size:.88rem;cursor:pointer;transition:all .15s;white-space:nowrap;background:var(--bgc);color:var(--t)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--ph)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:var(--dh)}
+.btn-outline{background:var(--bgc);border:1px solid var(--b)}
+.btn-outline:hover{background:var(--bg)}
+.btn-icon{background:none;padding:6px 8px;font-size:1.1rem;color:var(--ts)}
+.btn-icon:hover{color:var(--t)}
+.btn-block{width:100%;justify-content:center}
+.btn-sm{padding:4px 8px;font-size:.78rem}
+.search-bar{position:sticky;top:52px;z-index:99;padding:6px 14px;background:var(--bg)}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--r);padding:0 10px}
+.search-wrap input{flex:1;border:none;outline:none;padding:9px 0;font-size:.92rem;background:transparent}
+.main-layout{display:grid;grid-template-columns:180px 1fr;min-height:calc(100vh - 104px)}
+.sidebar{background:var(--bgs);border-right:1px solid var(--b);padding:10px;overflow-y:auto}
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;padding:0 6px 6px;font-size:.82rem;font-weight:600;color:var(--ts)}
+.badge{background:var(--primary);color:#fff;font-size:.68rem;padding:2px 8px;border-radius:10px}
+.category-nav{display:flex;flex-direction:column;gap:1px}
+.cat-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:var(--rs);text-decoration:none;color:var(--t);font-size:.88rem;cursor:pointer;transition:background .15s;border:none;background:none;width:100%;text-align:left}
+.cat-item:hover{background:rgba(0,0,0,.05)}
+.cat-item.active{background:var(--primary);color:#fff}
+.cat-item .count{font-size:.72rem;margin-left:auto;opacity:.7}
+.material-list{padding:12px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 16px;color:var(--ts);text-align:center}
+.empty-icon{font-size:3rem;margin-bottom:10px}
+.card{background:var(--bgc);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh);cursor:pointer;position:relative}
+.card:hover{box-shadow:var(--shm)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.card-title{font-weight:600;font-size:.92rem;flex:1;word-break:break-all}
+.card-actions{display:flex;gap:2px;flex-shrink:0}
+.card-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.card-cat{font-size:.72rem;padding:2px 8px;border-radius:20px;background:#ede9fe;color:var(--primary)}
+.card-tag{font-size:.7rem;padding:1px 7px;border-radius:20px;background:#f1f5f9;color:var(--ts)}
+.card-preview{margin-top:6px;font-size:.85rem;color:var(--ts);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-source{margin-top:4px;font-size:.78rem;color:var(--ts)}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bgc);border-radius:var(--r);box-shadow:var(--shm);width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--bgc);z-index:5}
+.modal-header h3{font-size:1rem}
+.modal-body{padding:16px 18px}
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:.82rem;font-weight:500;margin-bottom:3px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--b);border-radius:var(--rs);font-size:.88rem;font-family:inherit;background:var(--bgc)}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.required{color:var(--danger)}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 22px;border-radius:20px;font-size:.88rem;z-index:300;display:none;animation:toastIn .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;height:56px;background:var(--bgc);border-top:1px solid var(--b)}
+.mobile-nav button{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:none;border:none;font-size:.84rem;color:var(--ts);cursor:pointer}
+.mobile-nav button.active{color:var(--primary);font-weight:600}
+.text-muted{color:var(--ts);font-size:.82rem}
+.mt-2{margin-top:6px}
+@media(max-width:768px){
+  .main-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .sidebar.show{display:block;position:fixed;inset:0;top:52px;z-index:150;padding-top:6px}
+  .mobile-nav{display:flex}
+  .form-row{grid-template-columns:1fr}
+  body{padding-bottom:56px}
+}
+@media(min-width:769px)and(max-width:1024px){.main-layout{grid-template-columns:160px 1fr}}
+.settings-section{margin-bottom:20px}
+.settings-section h4{font-size:.9rem;margin-bottom:4px}
+.settings-hint{font-size:.8rem;color:var(--ts);margin-bottom:8px}
+.modal-sm{max-width:340px}
+.import-hint{font-size:.78rem;color:var(--ts);margin-top:4px}
+</style>
 </head>
 <body>
-  <div id="app">
-    <!-- 顶部导航 -->
-    <header class="topbar">
-      <h1 class="logo">📚 语文素材库</h1>
-      <div class="topbar-actions">
-        <button id="btn-add" class="btn btn-primary" title="添加素材">＋ 新增</button>
-        <button id="btn-settings" class="btn btn-icon" title="设置">⚙️</button>
-      </div>
-    </header>
-
-    <!-- 搜索栏 -->
-    <div class="search-bar">
-      <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="搜索素材标题、内容…" autocomplete="off">
-        <button id="btn-clear-search" class="btn-clear" style="display:none">✕</button>
-      </div>
+<div id="app">
+  <header class="topbar">
+    <span class="logo">📚 语文素材库</span>
+    <div style="display:flex;gap:4px">
+      <button class="btn btn-primary" onclick="openEdit()">＋ 新增</button>
+      <button class="btn btn-icon" onclick="openModal('settings-modal')">⚙️</button>
     </div>
-
-    <!-- 主内容区 -->
-    <main class="main-layout">
-      <!-- 侧边栏：分类 -->
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-          <span>📂 分类</span>
-          <span id="category-count" class="badge">0</span>
-        </div>
-        <nav class="category-nav" id="category-nav">
-          <a href="#" class="category-item active" data-category="">📋 全部</a>
-        </nav>
-      </aside>
-
-      <!-- 素材列表 -->
-      <section class="material-list" id="material-list">
-        <div class="empty-state" id="empty-state">
-          <div class="empty-icon">📭</div>
-          <p>还没有素材，点击右上角「＋ 新增」来添加第一条吧</p>
-        </div>
-      </section>
-
-      <!-- 详情/编辑面板 -->
-      <aside class="detail-panel" id="detail-panel" style="display:none">
-        <div class="panel-header">
-          <h3 id="panel-title">素材详情</h3>
-          <button class="btn btn-icon btn-close-panel" title="关闭">✕</button>
-        </div>
-        <div class="panel-body" id="panel-body"></div>
-      </aside>
-    </main>
-
-    <!-- 移动端底部导航 -->
-    <nav class="mobile-nav" id="mobile-nav">
-      <button class="nav-item active" data-tab="list">📋 列表</button>
-      <button class="nav-item" data-tab="categories">📂 分类</button>
-      <button class="nav-item" data-tab="settings">⚙️ 设置</button>
-    </nav>
-
-    <!-- 设置面板 -->
-    <div class="modal-overlay" id="settings-modal" style="display:none">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>⚙️ 设置</h3>
-          <button class="btn btn-icon modal-close">✕</button>
-        </div>
-        <div class="modal-body">
-          <div class="settings-section">
-            <h4>📤 导出数据</h4>
-            <p class="settings-hint">将所有素材导出为 JSON 文件</p>
-            <button id="btn-export" class="btn btn-outline btn-block">下载 JSON</button>
-          </div>
-          <div class="settings-section">
-            <h4>📥 导入数据</h4>
-            <p class="settings-hint">从 JSON 文件批量导入素材（自动去重）</p>
-            <input type="file" id="import-file" accept=".json" style="display:none">
-            <button id="btn-import" class="btn btn-outline btn-block">选择文件导入</button>
-          </div>
-          <div class="settings-section">
-            <h4>ℹ️ 关于</h4>
-            <p class="settings-hint">语文素材库 v1.0 · 数据存储于本地</p>
-          </div>
-        </div>
-      </div>
+  </header>
+  <div class="search-bar">
+    <div class="search-wrap">
+      <span>🔍</span>
+      <input type="text" id="search" placeholder="搜索素材…" oninput="render()">
+      <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">✕</button>
     </div>
+  </div>
+  <main class="main-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header"><span>📂 分类</span><span class="badge" id="catCount">0</span></div>
+      <nav class="category-nav" id="catNav"></nav>
+    </aside>
+    <section class="material-list" id="list"></section>
+  </main>
+  <nav class="mobile-nav">
+    <button class="active" data-tab="list" onclick="switchTab('list')">📋 列表</button>
+    <button data-tab="cats" onclick="switchTab('cats')">📂 分类</button>
+    <button data-tab="settings" onclick="switchTab('settings')">⚙️ 设置</button>
+  </nav>
+</div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast" style="display:none"></div>
-
-    <!-- 新增/编辑弹窗 -->
-    <div class="modal-overlay" id="edit-modal" style="display:none">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 id="edit-modal-title">新增素材</h3>
-          <button class="btn btn-icon modal-close">✕</button>
-        </div>
-        <div class="modal-body">
-          <form id="edit-form">
-            <div class="form-group">
-              <label for="edit-title">标题 <span class="required">*</span></label>
-              <input type="text" id="edit-title" required placeholder="例如：关于坚持的名言">
-            </div>
-            <div class="form-group">
-              <label for="edit-content">内容 <span class="required">*</span></label>
-              <textarea id="edit-content" rows="5" required placeholder="素材正文…"></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="edit-category">分类</label>
-                <select id="edit-category">
-                  <option value="名言警句">名言警句</option>
-                  <option value="好词好句">好词好句</option>
-                  <option value="诗词名句">诗词名句</option>
-                  <option value="人物事例">人物事例</option>
-                  <option value="时事热点">时事热点</option>
-                  <option value="哲理故事">哲理故事</option>
-                  <option value="优美段落">优美段落</option>
-                  <option value="其他">其他</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="edit-tags">标签（逗号分隔）</label>
-                <input type="text" id="edit-tags" placeholder="例如：坚持, 励志, 名言">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="edit-source">出处/来源</label>
-              <input type="text" id="edit-source" placeholder="例如：《论语》">
-            </div>
-            <div class="form-group">
-              <label for="edit-notes">备注</label>
-              <textarea id="edit-notes" rows="2" placeholder="个人笔记…"></textarea>
-            </div>
-            <input type="hidden" id="edit-id">
-            <div class="form-actions">
-              <button type="button" class="btn btn-outline modal-close">取消</button>
-              <button type="submit" class="btn btn-primary">保存</button>
-            </div>
-          </form>
-        </div>
+<!-- 设置弹窗 -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-header"><h3>⚙️ 设置</h3><button class="btn btn-icon" onclick="closeModal('settings-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="settings-section">
+        <h4>📤 导出数据</h4>
+        <p class="settings-hint">将所有素材导出为 JSON 文件备份</p>
+        <button class="btn btn-outline btn-block" onclick="exportData()">下载 JSON</button>
       </div>
-    </div>
-
-    <!-- 删除确认弹窗 -->
-    <div class="modal-overlay" id="delete-modal" style="display:none">
-      <div class="modal modal-sm">
-        <div class="modal-header">
-          <h3>⚠️ 确认删除</h3>
-        </div>
-        <div class="modal-body">
-          <p>确定要删除这条素材吗？此操作不可撤销。</p>
-          <div class="form-actions">
-            <button class="btn btn-outline modal-close">取消</button>
-            <button id="btn-confirm-delete" class="btn btn-danger">删除</button>
-          </div>
-        </div>
+      <div class="settings-section">
+        <h4>📥 导入数据</h4>
+        <p class="settings-hint">从 JSON 文件批量导入（自动去重）</p>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+        <button class="btn btn-outline btn-block" onclick="document.getElementById('importFile').click()">选择文件导入</button>
+        <p class="import-hint">⚠ 导入会合并到现有数据，不会覆盖</p>
       </div>
-    </div>
-
-    <!-- 详情查看弹窗 -->
-    <div class="modal-overlay" id="detail-modal" style="display:none">
-      <div class="modal">
-        <div class="modal-header">
-          <h3 id="detail-modal-title">素材详情</h3>
-          <button class="btn btn-icon modal-close">✕</button>
-        </div>
-        <div class="modal-body" id="detail-modal-body"></div>
+      <div class="settings-section">
+        <h4>🗑 清空数据</h4>
+        <p class="settings-hint">删除所有素材，不可恢复</p>
+        <button class="btn btn-danger btn-block" onclick="if(confirm('确定要清空所有数据吗？')){clearAll()}">清空全部数据</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="/app.js"></script>
+<!-- 编辑弹窗 -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="editTitle">新增素材</h3><button class="btn btn-icon" onclick="closeModal('edit-modal')">✕</button></div>
+    <div class="modal-body">
+      <form id="editForm" onsubmit="saveMaterial(event)">
+        <div class="form-group"><label>标题 <span class="required">*</span></label><input type="text" id="etitle" required placeholder="例如：关于坚持的名言"></div>
+        <div class="form-group"><label>内容 <span class="required">*</span></label><textarea id="econtent" rows="4" required placeholder="素材正文…"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>分类</label><select id="ecat"><option value="名言警句">名言警句</option><option value="好词好句">好词好句</option><option value="诗词名句">诗词名句</option><option value="人物事例">人物事例</option><option value="时事热点">时事热点</option><option value="哲理故事">哲理故事</option><option value="优美段落">优美段落</option><option value="其他">其他</option></select></div>
+          <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="etags" placeholder="坚持, 励志"></div>
+        </div>
+        <div class="form-group"><label>出处/来源</label><input type="text" id="esource" placeholder="例如：《论语》"></div>
+        <div class="form-group"><label>备注</label><textarea id="enotes" rows="2" placeholder="个人笔记…"></textarea></div>
+        <input type="hidden" id="eid">
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="closeModal('edit-modal')">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="dtitle"></h3><button class="btn btn-icon" onclick="closeModal('detail-modal')">✕</button></div>
+    <div class="modal-body" id="dbody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'yuwen_materials';
+let materials = [];
+let currentCat = '';
+let editId = null;
+
+function load() {
+  try { materials = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch { materials = []; }
+}
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(materials)); }
+
+function ts() { return new Date().toISOString().replace('T',' ').slice(0,19); }
+
+function render() {
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  document.getElementById('clearSearch').style.display = search ? 'block' : 'none';
+  let items = materials;
+  if (currentCat) items = items.filter(m => m.category === currentCat);
+  if (search) items = items.filter(m => 
+    (m.title||'').toLowerCase().includes(search) || (m.content||'').toLowerCase().includes(search) ||
+    (m.source||'').toLowerCase().includes(search) || (m.notes||'').toLowerCase().includes(search)
+  );
+  items.sort((a,b) => b.updated_at.localeCompare(a.updated_at));
+
+  const list = document.getElementById('list');
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>还没有素材，点击右上角「＋ 新增」添加第一条</p></div>';
+  } else {
+    list.innerHTML = items.map(m => `
+      <div class="card" onclick="viewDetail('${m.id}')">
+        <div class="card-header">
+          <span class="card-title">${esc(m.title)}</span>
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-icon btn-sm" onclick="copyText('${m.id}')" title="复制">📋</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          <span class="card-cat">${esc(m.category)}</span>
+          ${(m.tags||[]).map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}
+        </div>
+        <div class="card-preview">${esc(m.content)}</div>
+        ${m.source ? `<div class="card-source">📖 ${esc(m.source)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Categories
+  const cats = [...new Set(materials.map(m => m.category))];
+  document.getElementById('catCount').textContent = cats.length;
+  const preset = ['名言警句','好词好句','诗词名句','人物事例','时事热点','哲理故事','优美段落','其他'];
+  const ordered = preset.filter(c => cats.includes(c));
+  const others = cats.filter(c => !preset.includes(c));
+  const allCats = [...ordered, ...others];
+  document.getElementById('catNav').innerHTML = 
+    `<button class="cat-item ${currentCat===''?'active':''}" onclick="filterCat('')">📋 全部 <span class="count">${materials.length}</span></button>` +
+    allCats.map(c => `<button class="cat-item ${currentCat===c?'active':''}" onclick="filterCat('${esc(c)}')">📌 ${esc(c)} <span class="count">${materials.filter(m=>m.category===c).length}</span></button>`).join('');
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  render();
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; }
+
+function openEdit(id) {
+  editId = id || null;
+  const m = id ? materials.find(x => x.id === id) : null;
+  document.getElementById('editTitle').textContent = m ? '编辑素材' : '新增素材';
+  document.getElementById('etitle').value = m ? m.title : '';
+  document.getElementById('econtent').value = m ? m.content : '';
+  document.getElementById('ecat').value = m ? m.category : '名言警句';
+  document.getElementById('etags').value = m && m.tags ? m.tags.join(', ') : '';
+  document.getElementById('esource').value = m ? m.source : '';
+  document.getElementById('enotes').value = m ? m.notes : '';
+  document.getElementById('eid').value = m ? m.id : '';
+  openModal('edit-modal');
+}
+
+function saveMaterial(e) {
+  e.preventDefault();
+  const title = document.getElementById('etitle').value.trim();
+  const content = document.getElementById('econtent').value.trim();
+  if (!title || !content) return toast('标题和内容不能为空');
+  const data = {
+    title, content,
+    category: document.getElementById('ecat').value,
+    tags: document.getElementById('etags').value.split(/[,，]/).map(t=>t.trim()).filter(Boolean),
+    source: document.getElementById('esource').value.trim(),
+    notes: document.getElementById('enotes').value.trim(),
+    updated_at: ts()
+  };
+  if (editId) {
+    const idx = materials.findIndex(m => m.id === editId);
+    if (idx >= 0) materials[idx] = { ...materials[idx], ...data };
+  } else {
+    data.id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    data.created_at = ts();
+    materials.push(data);
+  }
+  save(); render();
+  closeModal('edit-modal');
+  toast(editId ? '已更新 ✅' : '已添加 ✅');
+}
+
+function viewDetail(id) {
+  const m = materials.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('dtitle').textContent = m.title;
+  document.getElementById('dbody').innerHTML = `
+    <div class="form-group"><label>分类</label><div><span class="card-cat">${esc(m.category)}</span></div></div>
+    ${m.tags&&m.tags.length?`<div class="form-group"><label>标签</label><div>${m.tags.map(t=>`<span class="card-tag">${esc(t)}</span>`).join(' ')}</div></div>`:''}
+    <div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">${esc(m.content)}</div></div>
+    ${m.source?`<div class="form-group"><label>出处</label><div>${esc(m.source)}</div></div>`:''}
+    ${m.notes?`<div class="form-group"><label>备注</label><div>${esc(m.notes)}</div></div>`:''}
+    <div class="form-group"><label>更新时间</label><div class="text-muted">${m.updated_at}</div></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-outline" onclick="copyText('${m.id}');closeModal('detail-modal')">📋 复制内容</button>
+      <button class="btn btn-primary" onclick="closeModal('detail-modal');openEdit('${m.id}')">✏️ 编辑</button>
+      <button class="btn btn-danger" onclick="closeModal('detail-modal');if(confirm('确定删除？')){materials=materials.filter(x=>x.id!=='${m.id}');save();render();toast('已删除')}">🗑 删除</button>
+    </div>
+  `;
+  openModal('detail-modal');
+}
+
+async function copyText(id) {
+  const m = materials.find(x => x.id === id);
+  if (!m) return;
+  try { await navigator.clipboard.writeText(m.content); toast('已复制 ✅'); }
+  catch { const ta=document.createElement('textarea');ta.value=m.content;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('已复制 ✅'); }
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(materials,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `materials-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(a.href); toast('导出成功 ✅');
+}
+
+function importData(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const items = JSON.parse(e.target.result);
+      if (!Array.isArray(items)) return toast('格式错误');
+      let added=0, skipped=0;
+      for (const item of items) {
+        if (materials.find(m => m.title===item.title && m.content===item.content)) { skipped++; continue; }
+        materials.push({...item, id: item.id || Date.now().toString(36)+Math.random().toString(36).slice(2,6), updated_at: ts()});
+        added++;
+      }
+      save(); render(); closeModal('settings-modal');
+      toast(`导入完成：新增 ${added} 条，跳过 ${skipped} 条`);
+    } catch { toast('文件格式错误'); }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function clearAll() {
+  materials = []; save(); render(); toast('已清空');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.style.display = 'none', 1800);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  const sidebar = document.getElementById('sidebar');
+  if (tab === 'cats') sidebar.classList.add('show');
+  else sidebar.classList.remove('show');
+  if (tab === 'settings') openModal('settings-modal');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); document.getElementById('search').focus(); }
+});
+
+load(); render();
+</script>
 </body>
 </html>
