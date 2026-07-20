@@ -2,8 +2,15 @@ const { neon } = require('@neondatabase/serverless');
 
 const sql = neon(process.env.DATABASE_URL);
 
-// Init table on first run
 async function initDB() {
+  // Drop old table if id is INTEGER (migration from old schema)
+  try {
+    const cols = await sql`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'materials' AND column_name = 'id'`;
+    if (cols.length > 0 && cols[0].data_type === 'integer') {
+      await sql`DROP TABLE materials`;
+    }
+  } catch (e) { /* table might not exist yet */ }
+
   await sql`
     CREATE TABLE IF NOT EXISTS materials (
       id TEXT PRIMARY KEY,
@@ -31,19 +38,16 @@ exports.handler = async (event) => {
   const method = event.httpMethod;
 
   try {
-    // GET /api/materials
     if (method === 'GET' && path === '/materials') {
       const rows = await sql`SELECT * FROM materials ORDER BY updated_at DESC`;
       return json(rows.map(r => ({ ...r, tags: parseTags(r.tags) })));
     }
 
-    // GET /api/materials/export
     if (method === 'GET' && path === '/materials/export') {
       const rows = await sql`SELECT * FROM materials ORDER BY category, updated_at DESC`;
       return json(rows.map(r => ({ ...r, tags: parseTags(r.tags) })));
     }
 
-    // GET /api/materials/:id
     if (method === 'GET' && path.startsWith('/materials/')) {
       const id = path.split('/')[2];
       const rows = await sql`SELECT * FROM materials WHERE id = ${id}`;
@@ -51,7 +55,6 @@ exports.handler = async (event) => {
       return json({ ...rows[0], tags: parseTags(rows[0].tags) });
     }
 
-    // POST /api/materials
     if (method === 'POST' && path === '/materials') {
       const body = JSON.parse(event.body);
       if (!body.title || !body.content) return json({ error: '标题和内容不能为空' }, 400);
@@ -71,7 +74,6 @@ exports.handler = async (event) => {
       return json({ success: true, id }, 201);
     }
 
-    // POST /api/materials/sync (batch sync from client)
     if (method === 'POST' && path === '/materials/sync') {
       const body = JSON.parse(event.body);
       if (!Array.isArray(body)) return json({ error: 'Invalid data' }, 400);
@@ -94,7 +96,6 @@ exports.handler = async (event) => {
       return json({ synced });
     }
 
-    // DELETE /api/materials/:id
     if (method === 'DELETE' && path.startsWith('/materials/')) {
       const id = path.split('/')[2];
       await sql`DELETE FROM materials WHERE id = ${id}`;
