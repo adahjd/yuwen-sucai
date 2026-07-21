@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#4f46e5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>语文素材�?/title>
+<title>语文素材库</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--primary:#4f46e5;--ph:#4338ca;--danger:#ef4444;--dh:#dc2626;--bg:#f8fafc;--bgc:#fff;--bgs:#f1f5f9;--t:#1e293b;--ts:#64748b;--b:#e2e8f0;--r:10px;--rs:6px;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.1);--green:#22c55e;--red:#ef4444}
@@ -123,18 +123,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <body>
 <div id="app">
   <header class="topbar">
-    <span class="logo">📚 语文素材�?/span>
+    <span class="logo">📚 语文素材库</span>
     <div style="display:flex;gap:4px;align-items:center">
       <span class="sync-status" id="syncStatus"><span class="sync-dot online" id="syncDot"></span> 云端</span>
-      <button class="btn btn-primary" onclick="openEdit()">�?新增</button>
+      <button class="btn btn-primary" onclick="openEdit()">＋ 新增</button>
       <button class="btn btn-icon" onclick="openModal('settings-modal')">⚙️</button>
     </div>
   </header>
   <div class="search-bar">
     <div class="search-wrap">
       <span>🔍</span>
-      <input type="text" id="search" placeholder="搜索素材�? oninput="render()" enterkeyhint="search">
-      <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">�?/button>
+      <input type="text" id="search" placeholder="搜索素材…" oninput="render()" enterkeyhint="search">
+      <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">✕</button>
     </div>
   </div>
   <main class="main-layout">
@@ -143,7 +143,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <nav class="category-nav" id="catNav"></nav>
       <div style="border-top:1px solid var(--b);margin:8px 0;padding-top:8px">
         <button class="cat-item review-item" id="reviewBtn" onclick="showReview()">
-          🕐 待审�?<span class="badge badge-red" id="pendingCount" style="display:none">0</span>
+          🕐 待审核 <span class="badge badge-red" id="pendingCount" style="display:none">0</span>
         </button>
       </div>
     </aside>
@@ -158,7 +158,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
-    <div class="modal-header"><h3>⚙️ 设置</h3><button class="btn btn-icon" onclick="closeModal('settings-modal')">�?/button></div>
+    <div class="modal-header"><h3>⚙️ 设置</h3><button class="btn btn-icon" onclick="closeModal('settings-modal')">✕</button></div>
     <div class="modal-body">
       <div class="settings-section">
         <h4>📤 导出数据</h4>
@@ -167,20 +167,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
       <div class="settings-section">
         <h4>📥 导入数据</h4>
-        <p class="settings-hint">�?JSON 文件批量导入（自动去重）</p>
+        <p class="settings-hint">从 JSON 文件批量导入（自动去重）</p>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
         <button class="btn btn-outline btn-block" onclick="document.getElementById('importFile').click()">选择文件导入</button>
-        <p class="import-hint">�?导入会合并到现有数据，不会覆�?/p>
+        <p class="import-hint">⚠ 导入会合并到现有数据，不会覆盖</p>
       </div>
       <div class="settings-section">
         <h4>☁️ 云端同步</h4>
-        <p class="settings-hint">所有数据自动同步到云端数据�?/p>
+      </div>
+      <div class="settings-section">
+        <h4>🕷 智能爬取</h4>
+        <p class="settings-hint">从B站等网站自动抓取高考作文素材</p>
+        <button class="btn btn-primary btn-block" id="crawlBtn" onclick="triggerCrawl()">🚀 从B站爬取素材</button>
+        <p id="crawlStatus" class="sync-status" style="display:none"></p>
+        <p class="settings-hint">所有数据自动同步到云端数据库</p>
         <button class="btn btn-outline btn-block" onclick="forceCloudSync()">🔄 立即同步</button>
       </div>
       <div class="settings-section">
         <h4>🗑 清空数据</h4>
         <p class="settings-hint">删除所有素材，不可恢复</p>
-        <button class="btn btn-danger btn-block" onclick="if(confirm('确定要清空所有数据吗�?)){clearAll()}">清空全部数据</button>
+        <button class="btn btn-danger btn-block" onclick="if(confirm('确定要清空所有数据吗？')){clearAll()}">清空全部数据</button>
       </div>
     </div>
   </div>
@@ -188,17 +194,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
-    <div class="modal-header"><h3 id="editTitle">新增素材</h3><button class="btn btn-icon" onclick="closeModal('edit-modal')">�?/button></div>
+    <div class="modal-header"><h3 id="editTitle">新增素材</h3><button class="btn btn-icon" onclick="closeModal('edit-modal')">✕</button></div>
     <div class="modal-body">
       <form id="editForm" onsubmit="saveMaterial(event)">
         <div class="form-group"><label>标题 <span class="required">*</span></label><input type="text" id="etitle" required placeholder="例如：关于坚持的名言"></div>
-        <div class="form-group"><label>内容 <span class="required">*</span></label><textarea id="econtent" rows="4" required placeholder="素材正文�?></textarea></div>
+        <div class="form-group"><label>内容 <span class="required">*</span></label><textarea id="econtent" rows="4" required placeholder="素材正文…"></textarea></div>
         <div class="form-row">
           <div class="form-group"><label>分类</label><select id="ecat"><option value="名言警句">名言警句</option><option value="好词好句">好词好句</option><option value="诗词名句">诗词名句</option><option value="人物事例">人物事例</option><option value="时事热点">时事热点</option><option value="哲理故事">哲理故事</option><option value="优美段落">优美段落</option><option value="其他">其他</option></select></div>
-          <div class="form-group"><label>标签（逗号分隔�?/label><input type="text" id="etags" placeholder="坚持, 励志"></div>
+          <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="etags" placeholder="坚持, 励志"></div>
         </div>
-        <div class="form-group"><label>出处/来源</label><input type="text" id="esource" placeholder="例如：《论语�?></div>
-        <div class="form-group"><label>备注</label><textarea id="enotes" rows="2" placeholder="个人笔记�?></textarea></div>
+        <div class="form-group"><label>出处/来源</label><input type="text" id="esource" placeholder="例如：《论语》"></div>
+        <div class="form-group"><label>备注</label><textarea id="enotes" rows="2" placeholder="个人笔记…"></textarea></div>
         <input type="hidden" id="eid">
         <div class="form-actions">
           <button type="button" class="btn btn-outline" onclick="closeModal('edit-modal')">取消</button>
@@ -211,7 +217,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
-    <div class="modal-header"><h3 id="dtitle"></h3><button class="btn btn-icon" onclick="closeModal('detail-modal')">�?/button></div>
+    <div class="modal-header"><h3 id="dtitle"></h3><button class="btn btn-icon" onclick="closeModal('detail-modal')">✕</button></div>
     <div class="modal-body" id="dbody"></div>
   </div>
 </div>
@@ -230,11 +236,11 @@ var syncTimer = null;
 var showPending = false;
 
 var SEED_DATA = [
-  {id:'seed1',title:'坦诚交流—�?024全国甲卷作文素材',content:'真正的沟通不在于说多少话，而在于是否敢于袒露真实的自己。坦诚交流是人与人之间最珍贵的桥梁，它让我们超越误解、跨越隔阂。正如古人所言�?君子和而不同，小人同而不和�?学会坦诚，就是学会在尊重差异的前提下勇敢表达�?,category:'名言警句',tags:['沟�?,'坦诚','人际关系','高�?024'],source:'2024年全国甲卷作文题"相处之道"',notes:'适用于议论文中关于人际关系、沟通艺术的论证',status:'approved',created_at:'2026-07-20 12:00:00',updated_at:'2026-07-20 12:00:00'},
-  {id:'seed2',title:'人类探索精神的典范——中国航天事�?,content:'�?嫦娥四号"揭开月背神秘面纱，到"天问一�?踏上火星探测之旅，再�?嫦娥五号"实现地外天体采样返回，中国航天人用一次次壮举证明：人类的探索精神永无止境。正如科学家卡尔·萨根所说："在某个地方，有令人难以置信的事等待被发现�?这种探索未知的勇气，正是推动人类文明前行的根本动力�?,category:'人物事例',tags:['航天','探索','创新','高�?024'],source:'2024年新课标II卷作文题"探索未知"',notes:'可用于科技发展、创新精神、人类探索等主题',status:'approved',created_at:'2026-07-20 12:01:00',updated_at:'2026-07-20 12:01:00'},
-  {id:'seed3',title:'AI时代：问题会变少吗？',content:'随着ChatGPT等人工智能工具的普及，我们似乎能在几秒钟内获得任何问题的答案。但问题的本质不在于答案的多少，而在于提出问题的能力。爱因斯坦曾说："提出一个问题往往比解决一个问题更重要�?当机器能够回答一切已知问题时，人类最宝贵的能力恰恰是提出那些机器从未想过的新问题。AI不是问题的终结者，而是激发更深层思考的催化剂�?,category:'时事热点',tags:['AI','人工智能','思辨','高�?024'],source:'2024年新课标I卷作文题"问题"',notes:'辩证思考技术与人类关系，适合议论�?,status:'approved',created_at:'2026-07-20 12:02:00',updated_at:'2026-07-20 12:02:00'},
-  {id:'seed4',title:'本手·妙手·俗手——围棋中的智�?,content:'围棋中有"本手、妙手、俗�?之说。本手是合乎棋理的正规下法，妙手是出人意料的精妙之着，俗手则是貌似合理实则受损的庸常之着。人生如棋，学习如棋。唯有扎实练好本手，才能厚积薄发，偶得妙手；如果急功近利、好高骛远，追求表面的华丽而忽视基本功的积累，终将落入俗手之境。万丈高楼平地起，真正的成功从来都建立在日复一日的扎实努力之上�?,category:'哲理故事',tags:['围棋','积累','成功','高�?022'],source:'2022年新课标I卷作文题"本手、妙手、俗�?',notes:'适用于勤奋、积累、成长、务实等主题论证',status:'approved',created_at:'2026-07-20 12:03:00',updated_at:'2026-07-20 12:03:00'},
-  {id:'seed5',title:'故事的力量——好故事改变世界',content:'好的故事是有力量的。它可以穿越时间的长河，跨越空间的阻隔，将一代又一代人的情感与智慧传递下去。从《诗经》的"关关雎鸠"到鲁迅的"呐喊"，从司马迁的《史记》到路遥的《平凡的世界》，每一个打动人心的故事，都是一扇通往理解与共情的窗。故事让我们看见他人，也看清自己；故事让个体经验变成集体记忆，让瞬间的感动沉淀为永恒的财富�?,category:'优美段落',tags:['故事','文学','表达','高�?023'],source:'2023年新课标I卷作文题"故事的力�?',notes:'可用于议论文开头或结尾段的优美表达',status:'approved',created_at:'2026-07-20 12:04:00',updated_at:'2026-07-20 12:04:00'}
+  {id:'seed1',title:'坦诚交流——2024全国甲卷作文素材',content:'真正的沟通不在于说多少话，而在于是否敢于袒露真实的自己。坦诚交流是人与人之间最珍贵的桥梁，它让我们超越误解、跨越隔阂。正如古人所言："君子和而不同，小人同而不和。"学会坦诚，就是学会在尊重差异的前提下勇敢表达。',category:'名言警句',tags:['沟通','坦诚','人际关系','高考2024'],source:'2024年全国甲卷作文题"相处之道"',notes:'适用于议论文中关于人际关系、沟通艺术的论证',status:'approved',created_at:'2026-07-20 12:00:00',updated_at:'2026-07-20 12:00:00'},
+  {id:'seed2',title:'人类探索精神的典范——中国航天事业',content:'从"嫦娥四号"揭开月背神秘面纱，到"天问一号"踏上火星探测之旅，再到"嫦娥五号"实现地外天体采样返回，中国航天人用一次次壮举证明：人类的探索精神永无止境。正如科学家卡尔·萨根所说："在某个地方，有令人难以置信的事等待被发现。"这种探索未知的勇气，正是推动人类文明前行的根本动力。',category:'人物事例',tags:['航天','探索','创新','高考2024'],source:'2024年新课标II卷作文题"探索未知"',notes:'可用于科技发展、创新精神、人类探索等主题',status:'approved',created_at:'2026-07-20 12:01:00',updated_at:'2026-07-20 12:01:00'},
+  {id:'seed3',title:'AI时代：问题会变少吗？',content:'随着ChatGPT等人工智能工具的普及，我们似乎能在几秒钟内获得任何问题的答案。但问题的本质不在于答案的多少，而在于提出问题的能力。爱因斯坦曾说："提出一个问题往往比解决一个问题更重要。"当机器能够回答一切已知问题时，人类最宝贵的能力恰恰是提出那些机器从未想过的新问题。AI不是问题的终结者，而是激发更深层思考的催化剂。',category:'时事热点',tags:['AI','人工智能','思辨','高考2024'],source:'2024年新课标I卷作文题"问题"',notes:'辩证思考技术与人类关系，适合议论文',status:'approved',created_at:'2026-07-20 12:02:00',updated_at:'2026-07-20 12:02:00'},
+  {id:'seed4',title:'本手·妙手·俗手——围棋中的智慧',content:'围棋中有"本手、妙手、俗手"之说。本手是合乎棋理的正规下法，妙手是出人意料的精妙之着，俗手则是貌似合理实则受损的庸常之着。人生如棋，学习如棋。唯有扎实练好本手，才能厚积薄发，偶得妙手；如果急功近利、好高骛远，追求表面的华丽而忽视基本功的积累，终将落入俗手之境。万丈高楼平地起，真正的成功从来都建立在日复一日的扎实努力之上。',category:'哲理故事',tags:['围棋','积累','成功','高考2022'],source:'2022年新课标I卷作文题"本手、妙手、俗手"',notes:'适用于勤奋、积累、成长、务实等主题论证',status:'approved',created_at:'2026-07-20 12:03:00',updated_at:'2026-07-20 12:03:00'},
+  {id:'seed5',title:'故事的力量——好故事改变世界',content:'好的故事是有力量的。它可以穿越时间的长河，跨越空间的阻隔，将一代又一代人的情感与智慧传递下去。从《诗经》的"关关雎鸠"到鲁迅的"呐喊"，从司马迁的《史记》到路遥的《平凡的世界》，每一个打动人心的故事，都是一扇通往理解与共情的窗。故事让我们看见他人，也看清自己；故事让个体经验变成集体记忆，让瞬间的感动沉淀为永恒的财富。',category:'优美段落',tags:['故事','文学','表达','高考2023'],source:'2023年新课标I卷作文题"故事的力量"',notes:'可用于议论文开头或结尾段的优美表达',status:'approved',created_at:'2026-07-20 12:04:00',updated_at:'2026-07-20 12:04:00'}
 ];
 
 function load() {
@@ -263,37 +269,38 @@ function scheduleCloudSync() {
 
 async function cloudSync() {
   try {
-    setSyncStatus('online', '同步�?);
+    setSyncStatus('online', '同步中');
     var all = materials.concat(pending);
     var resp = await fetch(API + '/sync', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(all)
     });
-    if (resp.ok) { setSyncStatus('online', '已同�?); }
+    if (resp.ok) { setSyncStatus('online', '已同步'); }
     else { setSyncStatus('offline', '失败'); }
   } catch(e) { setSyncStatus('offline', '离线'); }
 }
 
+async function forceCloudSync() { await cloudSync(); toast('同步完成'); }
+
 async function triggerCrawl() {
-  var btn = document.getElementById("crawlBtn");
-  var st = document.getElementById("crawlStatus");
-  btn.disabled = true; btn.textContent = "? ��ȡ��..."; st.style.display = "block"; st.textContent = "���ڴ�Bվץȡ�ز�...";
+  var btn = document.getElementById('crawlBtn');
+  var st = document.getElementById('crawlStatus');
+  btn.disabled = true; btn.textContent = '爬取中...'; st.style.display = 'block'; st.textContent = '正在从B站抓取素材...';
   try {
-    var res = await fetch(API.replace("/materials","") + "/crawl", { method: "POST" });
+    var res = await fetch('/api/crawl', { method: 'POST' });
     var data = await res.json();
-    if(data.added > 0) {
-      st.textContent = "? �ɹ�ץȡ " + data.added + " ƪ�زģ��뵽������ˡ��鿴";
+    if (data.added > 0) {
+      st.textContent = '成功抓取 ' + data.added + ' 篇素材！到待审核查看';
       loadPendingCount();
     } else {
-      st.textContent = "? δ�ҵ��µĸ������زģ����Ժ�����";
+      st.textContent = '未找到新素材（B站可能限流，请用电脑运行爬取素材.bat）';
     }
   } catch(e) {
-    st.textContent = "? ��ȡʧ��: " + e.message;
+    st.textContent = '爬取失败，请用电脑运行爬取素材.bat';
   }
-  btn.disabled = false; btn.textContent = "?? ������ȡ�ز�";
+  btn.disabled = false; btn.textContent = '从B站爬取素材';
 }
-async function forceCloudSync() { await cloudSync(); toast('同步完成'); }
 
 async function cloudLoad() {
   try {
@@ -315,7 +322,7 @@ async function cloudLoad() {
       else { materials.push(m); }
     });
     save(); render(); loadPendingCount();
-    setSyncStatus('online', '已同�?);
+    setSyncStatus('online', '已同步');
   } catch(e) {}
 }
 
@@ -377,12 +384,12 @@ function renderPending(s) {
 
   var list = document.getElementById('list');
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🎉</div><p>没有待审核素�?/p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🎉</div><p>没有待审核素材</p></div>';
   } else {
-    list.innerHTML = '<div style="padding:4px 0 8px;font-size:.85rem;color:var(--ts)">待审�?' + items.length + ' �?�?每天8点自动爬�?/div>' +
+    list.innerHTML = '<div style="padding:4px 0 8px;font-size:.85rem;color:var(--ts)">待审核 ' + items.length + ' 条 — 每天8点自动爬取</div>' +
       items.map(function(m) {
         return '<div class="card pending-card" onclick="viewPending(\''+m.id+'\')">'+
-          '<div class="card-review-badge">待审�?/div>'+
+          '<div class="card-review-badge">待审核</div>'+
           '<div class="card-header"><span class="card-title">'+esc(m.title)+'</span></div>'+
           '<div class="card-meta"><span class="card-cat">'+esc(m.category)+'</span>'+
           (m.tags||[]).map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join('')+'</div>'+
@@ -405,7 +412,7 @@ function renderApproved(s) {
 
   var list = document.getElementById('list');
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>没有匹配的素�?/p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>没有匹配的素材</p></div>';
   } else {
     list.innerHTML = items.map(function(m) {
       return '<div class="card" onclick="viewDetail(\''+m.id+'\')">'+
@@ -457,9 +464,9 @@ function viewPending(id) {
   h += '<div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">'+esc(m.content)+'</div></div>';
   if (m.notes) h += '<div class="form-group"><label>备注</label><div>'+esc(m.notes)+'</div></div>';
   h += '<div style="display:flex;gap:8px;margin-top:16px">'+
-    '<button class="btn btn-success" onclick="approveItem(\''+m.id+'\')">�?通过</button>'+
+    '<button class="btn btn-success" onclick="approveItem(\''+m.id+'\')">✅ 通过</button>'+
     '<button class="btn btn-outline" onclick="closeModal(\'detail-modal\');openEditPending(\''+m.id+'\')">✏️ 编辑后通过</button>'+
-    '<button class="btn btn-danger" onclick="rejectItem(\''+m.id+'\')">�?拒绝</button></div>';
+    '<button class="btn btn-danger" onclick="rejectItem(\''+m.id+'\')">❌ 拒绝</button></div>';
   document.getElementById('dbody').innerHTML = h;
   openModal('detail-modal');
 }
@@ -481,14 +488,14 @@ async function rejectItem(id) {
   pending = pending.filter(function(x){return x.id!==id;});
   save(); render(); closeModal('detail-modal');
   try { await fetch(API + '/' + id, {method:'DELETE'}); } catch(e) {}
-  toast('已拒�?);
+  toast('已拒绝');
 }
 
 function openEditPending(id) {
   var m = pending.find(function(x){return x.id===id;});
   if (!m) return;
   editId = id;
-  document.getElementById('editTitle').textContent = '编辑并审�?;
+  document.getElementById('editTitle').textContent = '编辑并审核';
   document.getElementById('etitle').value = m.title || '';
   document.getElementById('econtent').value = m.content || '';
   document.getElementById('ecat').value = m.category || '名言警句';
@@ -521,7 +528,7 @@ function saveMaterial(e) {
   e.preventDefault();
   var title = document.getElementById('etitle').value.trim();
   var content = document.getElementById('econtent').value.trim();
-  if (!title || !content) return toast('标题和内容不能为�?);
+  if (!title || !content) return toast('标题和内容不能为空');
   var data = {
     title:title, content:content,
     category:document.getElementById('ecat').value,
@@ -549,7 +556,7 @@ function saveMaterial(e) {
     materials.push(data);
   }
   save(); render(); closeModal('edit-modal');
-  toast(editId ? '已更�? : '已添�?);
+  toast(editId ? '已更新' : '已添加');
   editId = null;
 }
 
@@ -572,24 +579,24 @@ function viewDetail(id) {
 }
 
 function deleteMaterial(id) {
-  if (!confirm('确定删除�?)) return;
+  if (!confirm('确定删除？')) return;
   materials = materials.filter(function(x){return x.id!==id;});
   save(); render();
   fetch(API + '/' + id, {method:'DELETE'}).catch(function(){});
-  toast('已删�?);
+  toast('已删除');
 }
 
 async function copyText(id) {
   var source = materials.concat(pending);
   var m = source.find(function(x){return x.id===id;});
   if (!m) return;
-  try { await navigator.clipboard.writeText(m.content); toast('已复�?); }
+  try { await navigator.clipboard.writeText(m.content); toast('已复制'); }
   catch(e) {
     var ta = document.createElement('textarea');
     ta.value = m.content; ta.style.position = 'fixed'; ta.style.left = '-9999px';
     document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
-    toast('已复�?);
+    toast('已复制');
   }
 }
 
@@ -626,7 +633,7 @@ function importData(input) {
         added++;
       });
       save(); render(); closeModal('settings-modal');
-      toast('新增 '+added+' 条，跳过 '+skipped+' �?);
+      toast('新增 '+added+' 条，跳过 '+skipped+' 条');
     } catch(ex) { toast('文件格式错误'); }
     input.value = '';
   };
@@ -636,7 +643,7 @@ function importData(input) {
 function clearAll() {
   materials = []; pending = []; save(); render();
   fetch(API + '/clear', {method:'POST'}).catch(function(){});
-  toast('已清�?);
+  toast('已清空');
 }
 
 function openModal(id) { document.getElementById(id).classList.add('show'); }
