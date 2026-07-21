@@ -21,9 +21,7 @@ function get(url, extraHeaders) {
     https.get(url, { headers: headers }, function(res) {
       var data = '';
       res.on('data', function(chunk) { data += chunk; });
-      res.on('end', function() {
-        resolve({ status: res.statusCode, body: data });
-      });
+      res.on('end', function() { resolve({ status: res.statusCode, body: data }); });
     }).on('error', function(e) {
       console.error('  [HTTP]', e.message);
       resolve({ status: 0, body: '' });
@@ -31,9 +29,11 @@ function get(url, extraHeaders) {
   });
 }
 
-// ===== 提取文章纯文本（处理HTML和Quill Delta两种格式）=====
+// ===== 提取纯文本 =====
 function extractText(raw) {
   if (!raw) return '';
+  var t;
+  // Quill Delta JSON
   if (raw.trim().startsWith('{')) {
     try {
       var delta = JSON.parse(raw);
@@ -42,39 +42,54 @@ function extractText(raw) {
       for (var i = 0; i < ops.length; i++) {
         var ins = ops[i].insert;
         if (typeof ins === 'string') text += ins;
-        else if (ins && ins['native-image']) text += '';
-        else if (ins && ins.image) text += '';
-        else if (typeof ins === 'object') text += '';
       }
-      return text.replace(/\n{3,}/g, '\n\n').trim();
-    } catch(e) {}
+      t = text.replace(/\n{3,}/g, '\n\n').trim();
+    } catch(e) { t = ''; }
+  } else {
+    // HTML
+    t = raw
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<p[^>]*>/gi, '')
+      .replace(/<\/h\d>/gi, '\n')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<\/div>/gi, '\n')
+      .replace(/<\/figure>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&mdash;/g, '—')
+      .replace(/&ldquo;/g, '"')
+      .replace(/&rdquo;/g, '"')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
-  var t = raw
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-  return t.slice(0, 3000);
+  return t;
 }
 
-// ===== 过滤低质量/引流内容 =====
+// ===== 质量检测 =====
 function isQualityContent(content) {
-  if (!content || content.length < 200) return false;
-  var adPatterns = ['完整版见文末','领完整版','关+留','斯我斯我','高中生人手一份','领取完整','私信领取','点赞收藏','文末领取','关注领取'];
-  var adCount = 0;
-  for (var i = 0; i < adPatterns.length; i++) { if (content.indexOf(adPatterns[i]) >= 0) adCount++; }
-  if (content.length < 500 && adCount > 0) return false;
-  // 内容超过1500字 -> 肯定是好内容
-  if (content.length > 1500) return true;
-  // 500-1500字 -> 如果广告词多就过滤
-  if (content.length < 800 && adCount >= 3) return false;
+  if (!content || content.length < 800) return false;
+  // 检测是否为图片为主的引流文
+  var lines = content.split('\n').filter(function(l) { return l.trim().length > 10; });
+  if (lines.length < 5) return false;
+  // 引流关键词检测
+  var ad = ['完整版见文末', '领完整版', '关+留', '斯我斯我', '高中生人手一份',
+    '领取完整', '私信领取', '点赞收藏', '文末领取', '关注领取', '见文末',
+    '关+留', '斯我', '求三连', '一键三连', '关注我'];
+  var adc = 0;
+  for (var i = 0; i < ad.length; i++) { if (content.indexOf(ad[i]) >= 0) adc++; }
+  // 如果内容短且广告多，跳过
+  if (content.length < 1500 && adc >= 3) return false;
+  // 如果前半段全是广告，跳过
+  var firstHalf = content.slice(0, Math.floor(content.length / 3));
+  var adcFirst = 0;
+  for (var i2 = 0; i2 < ad.length; i2++) { if (firstHalf.indexOf(ad[i2]) >= 0) adcFirst++; }
+  if (adcFirst >= 2 && firstHalf.length < 400) return false;
   return true;
 }
 
@@ -83,89 +98,94 @@ async function crawlBilibili() {
   console.log('[B站专栏] 搜索中...');
   var items = [];
   var keywords = [
-    '高考作文素材积累', '高考满分作文', '作文素材人物',
-    '人民日报作文素材', '高考议论文素材', '语文作文万能素材',
-    '高考作文名人名言', '高考作文热点素材', '高考作文优美段落'
+    '高考满分作文范文',
+    '人民日报作文素材摘抄',
+    '高考作文万能素材',
+    '高考议论文人物素材',
+    '作文金句摘抄积累',
+    '高考作文开头结尾',
+    '作文素材人民日报',
+    '高中语文作文素材大全'
   ];
   var seen = {};
 
   for (var i = 0; i < keywords.length; i++) {
-    for (var page = 1; page <= 2; page++) {
-      try {
-        await delay(page === 1 ? 800 : 1200); // 页面间延迟，避免限流
-        var searchUrl = 'https://api.bilibili.com/x/web-interface/search/type?search_type=article&keyword='
-          + encodeURIComponent(keywords[i]) + '&page=' + page;
-        var r = await get(searchUrl, {
+    await delay(1200 + Math.random() * 800);
+    try {
+      var searchUrl = 'https://api.bilibili.com/x/web-interface/search/type?search_type=article&keyword='
+        + encodeURIComponent(keywords[i]) + '&page=1';
+      var r = await get(searchUrl, {
+        'Referer': 'https://www.bilibili.com/',
+        'Origin': 'https://www.bilibili.com'
+      });
+      if (r.status === 412) {
+        console.log('  限流(' + keywords[i].slice(0,15) + ')，等10秒...');
+        await delay(10000);
+        r = await get(searchUrl, {
           'Referer': 'https://www.bilibili.com/',
           'Origin': 'https://www.bilibili.com'
         });
+      }
+      if (r.status !== 200) { console.log('  ' + keywords[i].slice(0,15) + ' status=' + r.status); continue; }
 
-        if (r.status === 412) {
-          console.log('  搜索[' + keywords[i] + '] p' + page + ' 被限流(412)，等待5秒...');
+      var d = JSON.parse(r.body);
+      if (d.code !== 0 || !d.data) continue;
+
+      var articles = (d.data.result || []).slice(0, 3);
+      for (var j = 0; j < articles.length; j++) {
+        var a = articles[j];
+        var aid = a.id;
+        if (!aid || seen[aid]) continue;
+        seen[aid] = true;
+
+        await delay(800 + Math.random() * 600);
+        var detailUrl = 'https://api.bilibili.com/x/article/view?id=' + aid;
+        var dr = await get(detailUrl, {
+          'Referer': 'https://www.bilibili.com/read/cv' + aid,
+          'Origin': 'https://www.bilibili.com'
+        });
+
+        if (dr.status === 412) {
+          console.log('    限流，等5秒...');
           await delay(5000);
-          continue;
-        }
-        if (r.status !== 200) continue;
-
-        var d = JSON.parse(r.body);
-        if (d.code !== 0 || !d.data) continue;
-
-        var articles = (d.data.result || []).slice(0, 3);
-        for (var j = 0; j < articles.length; j++) {
-          var a = articles[j];
-          var aid = a.id;
-          if (!aid || seen[aid]) continue;
-          seen[aid] = true;
-
-          await delay(600); // 文章详情请求间延迟
-          var detailUrl = 'https://api.bilibili.com/x/article/view?id=' + aid;
-          var dr = await get(detailUrl, {
+          dr = await get(detailUrl, {
             'Referer': 'https://www.bilibili.com/read/cv' + aid,
             'Origin': 'https://www.bilibili.com'
           });
-
-          if (dr.status === 412) {
-            console.log('    [限流] 等待...');
-            await delay(5000);
-            dr = await get(detailUrl, {
-              'Referer': 'https://www.bilibili.com/read/cv' + aid,
-              'Origin': 'https://www.bilibili.com'
-            });
-          }
-          if (dr.status !== 200) continue;
-
-          try {
-            var dd = JSON.parse(dr.body);
-            if (dd.code !== 0 || !dd.data) continue;
-            var articleData = dd.data;
-            var title = String(articleData.title || '').replace(/<[^>]+>/g, '').trim().slice(0, 100);
-            var content = extractText(articleData.content || '');
-            var summary = String(articleData.summary || '').trim();
-            if (content.length < 200 && summary.length > content.length) {
-              content = summary;
-            }
-            if (!title) continue;
-            if (!isQualityContent(content)) {
-              console.log('    跳过: ' + title.slice(0, 30) + ' (' + content.length + '字)');
-              continue;
-            }
-
-            var tagNames = (articleData.tags || []).map(function(t) { return t.name || t; }).filter(Boolean);
-            console.log('    ✓ ' + title.slice(0, 40) + ' (' + content.length + '字)');
-            items.push({
-              title: title,
-              content: content,
-              source: 'B站专栏 - ' + (articleData.author_name || ''),
-              raw_url: 'https://www.bilibili.com/read/cv' + aid,
-              raw_tags: tagNames
-            });
-          } catch(e2) {
-            console.error('    解析失败:', e2.message);
-          }
         }
-      } catch(e) {
-        console.error('  [B站异常]', e.message);
+        if (dr.status !== 200) continue;
+
+        try {
+          var dd = JSON.parse(dr.body);
+          if (dd.code !== 0 || !dd.data) continue;
+          var art = dd.data;
+          var title = String(art.title || '').replace(/<[^>]+>/g, '').trim().slice(0, 100);
+          var content = extractText(art.content || '');
+          // 用 summary 补充看有没有更多文字
+          var summary = extractText(art.summary || '');
+          if (summary.length > content.length) content = summary;
+          if (!title) continue;
+          if (!isQualityContent(content)) {
+            var reason = content.length < 800 ? '(' + content.length + '字太短)' : '(引流)';
+            console.log('    跳过: ' + title.slice(0, 30) + ' ' + reason);
+            continue;
+          }
+
+          var tagNames = (art.tags || []).map(function(t) { return t.name || t; }).filter(Boolean);
+          console.log('    ✓ ' + title.slice(0, 40) + ' (' + content.length + '字)');
+          items.push({
+            title: title,
+            content: content,
+            source: 'B站专栏 - ' + (art.author_name || ''),
+            raw_url: 'https://www.bilibili.com/read/cv' + aid,
+            raw_tags: tagNames
+          });
+        } catch(e2) {
+          console.error('    解析失败:', e2.message);
+        }
       }
+    } catch(e) {
+      console.error('  [B站异常]', e.message);
     }
   }
   console.log('[B站专栏] 抓到 ' + items.length + ' 篇');
@@ -177,13 +197,13 @@ function ruleClassify(item) {
   var txt = (item.title + ' ' + item.content).toLowerCase();
   var tags = (item.raw_tags || []).slice();
   var rules = [
-    { c: '名言警句', k: ['名言', '格言', '警句', '金句', '语录', '说过', '曾说', '名人名言', '励志名言', '摘抄', '金句'] },
+    { c: '名言警句', k: ['名言', '格言', '警句', '金句', '语录', '说过', '曾说', '名人名言', '励志名言', '金句', '名句'] },
     { c: '诗词名句', k: ['诗', '词', '赋', '唐诗', '宋词', '诗经', '李白', '杜甫', '苏轼', '诗句', '古诗', '古诗词'] },
-    { c: '人物事例', k: ['人物', '故事', '经历', '事迹', '榜样', '英雄', '传奇', '名人', '人物素材', '事例'] },
-    { c: '时事热点', k: ['热点', '新闻', '事件', '科技', 'ai', '人工智能', '时事', '时评', '2025'] },
+    { c: '人物事例', k: ['人物', '事例', '事迹', '榜样', '英雄', '传奇', '名人', '人物素材'] },
+    { c: '时事热点', k: ['热点', '新闻', '事件', '科技', 'ai', '人工智能', '时事', '时评', '2025', '2026'] },
     { c: '哲理故事', k: ['哲理', '寓言', '启示', '道理', '智慧', '感悟', '哲学'] },
-    { c: '优美段落', k: ['优美', '描写', '段落', '散文', '风景', '景色', '排比', '文采', '美文', '开头', '结尾'] },
-    { c: '好词好句', k: ['好词', '好句', '成语', '词语', '词汇', '比喻', '宛若', '摘抄', '佳句', '妙语'] }
+    { c: '优美段落', k: ['优美', '描写', '段落', '散文', '风景', '景色', '排比', '文采', '美文', '开头', '结尾', '比喻'] },
+    { c: '好词好句', k: ['好词', '好句', '成语', '词语', '词汇', '宛若', '摘抄', '佳句', '妙语'] }
   ];
   var cat = '其他';
   for (var i = 0; i < rules.length; i++) {
@@ -197,7 +217,7 @@ function ruleClassify(item) {
   });
   return {
     title: item.title.replace(/<[^>]+>/g, '').trim().slice(0, 200),
-    content: item.content.slice(0, 3000),
+    content: item.content.slice(0, 8000),
     category: cat,
     tags: tags.slice(0, 5),
     source: item.source,
@@ -205,7 +225,7 @@ function ruleClassify(item) {
   };
 }
 
-// ===== AI分类 (DeepSeek) =====
+// ===== AI分类 =====
 async function classify(items) {
   if (!USE_AI) {
     console.log('[分类] 规则模式');
@@ -217,11 +237,10 @@ async function classify(items) {
     try {
       var c = await ai(items[i]);
       var tags = [].concat(c.tags || [], items[i].raw_tags || [])
-        .filter(function(v, i, a) { return a.indexOf(v) === i; })
-        .slice(0, 5);
+        .filter(function(v, i, a) { return a.indexOf(v) === i; }).slice(0, 5);
       out.push({
         title: c.title || items[i].title.replace(/<[^>]+>/g, '').trim().slice(0, 200),
-        content: items[i].content.slice(0, 3000),
+        content: items[i].content.slice(0, 8000),
         category: c.category || '其他',
         tags: tags,
         source: items[i].source,
@@ -285,7 +304,7 @@ async function save(items) {
     try {
       await sql`
         INSERT INTO materials (id, title, content, category, tags, source, notes, status, created_at, updated_at)
-        VALUES (${id}, ${x.title.slice(0, 200)}, ${x.content.slice(0, 5000)}, ${x.category},
+        VALUES (${id}, ${x.title.slice(0, 200)}, ${x.content.slice(0, 10000)}, ${x.category},
           ${JSON.stringify(x.tags || [])}, ${x.source}, ${x.notes || ''}, 'pending', ${ts}, ${ts})
         ON CONFLICT (id) DO NOTHING
       `;
