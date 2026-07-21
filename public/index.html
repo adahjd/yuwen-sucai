@@ -245,7 +245,7 @@ var SEED_DATA = [
 
 function load() {
   try { materials = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { materials = []; }
-  if (materials.length === 0) { materials = JSON.parse(JSON.stringify(SEED_DATA)); localStorage.setItem(STORAGE_KEY, JSON.stringify(materials)); }
+  if (!localStorage.getItem(STORAGE_KEY)) { materials = JSON.parse(JSON.stringify(SEED_DATA)); localStorage.setItem(STORAGE_KEY, JSON.stringify(materials)); }
   materials.forEach(function(m) { if (!m.status) m.status = 'approved'; });
   try { pending = JSON.parse(localStorage.getItem(PENDING_KEY) || '[]'); } catch(e) { pending = []; }
 }
