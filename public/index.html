@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#4f46e5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>璇枃绱犳潗搴?/title>
+<title>语文素材库</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--primary:#4f46e5;--ph:#4338ca;--danger:#ef4444;--dh:#dc2626;--bg:#f8fafc;--bgc:#fff;--bgs:#f1f5f9;--t:#1e293b;--ts:#64748b;--b:#e2e8f0;--r:10px;--rs:6px;--sh:0 1px 3px rgba(0,0,0,.08);--shm:0 4px 12px rgba(0,0,0,.1);--green:#22c55e;--red:#ef4444}
@@ -123,70 +123,70 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <body>
 <div id="app">
   <header class="topbar">
-    <span class="logo">馃摎 璇枃绱犳潗搴?/span>
+    <span class="logo">📚 语文素材库</span>
     <div style="display:flex;gap:4px;align-items:center">
-      <span class="sync-status" id="syncStatus"><span class="sync-dot online" id="syncDot"></span> 浜戠</span>
-      <button class="btn btn-primary" onclick="openEdit()">锛?鏂板</button>
-      <button class="btn btn-icon" onclick="openModal('settings-modal')">鈿欙笍</button>
+      <span class="sync-status" id="syncStatus"><span class="sync-dot online" id="syncDot"></span> 云端</span>
+      <button class="btn btn-primary" onclick="openEdit()">＋ 新增</button>
+      <button class="btn btn-icon" onclick="openModal('settings-modal')">⚙️</button>
     </div>
   </header>
   <div class="search-bar">
     <div class="search-wrap">
-      <span>馃攳</span>
-      <input type="text" id="search" placeholder="鎼滅储绱犳潗鈥? oninput="render()" enterkeyhint="search">
-      <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">鉁?/button>
+      <span>🔍</span>
+      <input type="text" id="search" placeholder="搜索素材…" oninput="render()" enterkeyhint="search">
+      <button id="clearSearch" style="display:none;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ts)" onclick="document.getElementById('search').value='';render()">✕</button>
     </div>
   </div>
   <main class="main-layout">
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header"><span>馃搨 鍒嗙被</span><span class="badge" id="catCount">0</span></div>
+      <div class="sidebar-header"><span>📂 分类</span><span class="badge" id="catCount">0</span></div>
       <nav class="category-nav" id="catNav"></nav>
       <div style="border-top:1px solid var(--b);margin:8px 0;padding-top:8px">
         <button class="cat-item review-item" id="reviewBtn" onclick="showReview()">
-          馃晲 寰呭鏍?<span class="badge badge-red" id="pendingCount" style="display:none">0</span>
+          🕐 待审核 <span class="badge badge-red" id="pendingCount" style="display:none">0</span>
         </button>
       </div>
     </aside>
     <section class="material-list" id="list"></section>
   </main>
   <nav class="mobile-nav">
-    <button class="active" data-tab="list" onclick="switchTab('list')">馃搵 鍒楄〃</button>
-    <button data-tab="cats" onclick="switchTab('cats')">馃搨 鍒嗙被</button>
-    <button data-tab="review" onclick="switchTab('review')" id="reviewTab">馃晲 瀹℃牳<span class="badge-dot" id="reviewDotMobile" style="display:none"></span></button>
+    <button class="active" data-tab="list" onclick="switchTab('list')">📋 列表</button>
+    <button data-tab="cats" onclick="switchTab('cats')">📂 分类</button>
+    <button data-tab="review" onclick="switchTab('review')" id="reviewTab">🕐 审核<span class="badge-dot" id="reviewDotMobile" style="display:none"></span></button>
   </nav>
 </div>
 
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
-    <div class="modal-header"><h3>鈿欙笍 璁剧疆</h3><button class="btn btn-icon" onclick="closeModal('settings-modal')">鉁?/button></div>
+    <div class="modal-header"><h3>⚙️ 设置</h3><button class="btn btn-icon" onclick="closeModal('settings-modal')">✕</button></div>
     <div class="modal-body">
       <div class="settings-section">
-        <h4>馃摛 瀵煎嚭鏁版嵁</h4>
-        <p class="settings-hint">灏嗘墍鏈夌礌鏉愬鍑轰负 JSON 鏂囦欢澶囦唤</p>
-        <button class="btn btn-outline btn-block" onclick="exportData()">涓嬭浇 JSON</button>
+        <h4>📤 导出数据</h4>
+        <p class="settings-hint">将所有素材导出为 JSON 文件备份</p>
+        <button class="btn btn-outline btn-block" onclick="exportData()">下载 JSON</button>
       </div>
       <div class="settings-section">
-        <h4>馃摜 瀵煎叆鏁版嵁</h4>
-        <p class="settings-hint">浠?JSON 鏂囦欢鎵归噺瀵煎叆锛堣嚜鍔ㄥ幓閲嶏級</p>
+        <h4>📥 导入数据</h4>
+        <p class="settings-hint">从 JSON 文件批量导入（自动去重）</p>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-        <button class="btn btn-outline btn-block" onclick="document.getElementById('importFile').click()">閫夋嫨鏂囦欢瀵煎叆</button>
-        <p class="import-hint">鈿?瀵煎叆浼氬悎骞跺埌鐜版湁鏁版嵁锛屼笉浼氳鐩?/p>
+        <button class="btn btn-outline btn-block" onclick="document.getElementById('importFile').click()">选择文件导入</button>
+        <p class="import-hint">⚠ 导入会合并到现有数据，不会覆盖</p>
       </div>
       <div class="settings-section">
-        <h4>鈽侊笍 浜戠鍚屾</h4>
-      </div>
-      <div class="settings-section">
-        <h4>馃暦 鏅鸿兘鐖彇</h4>
-        <p class="settings-hint">浠嶣绔欑瓑缃戠珯鑷姩鎶撳彇楂樿€冧綔鏂囩礌鏉?/p>
-        <button class="btn btn-primary btn-block" id="crawlBtn" onclick="triggerCrawl()">馃殌 浠嶣绔欑埇鍙栫礌鏉?/button>
+        <h4>🕷 智能爬取</h4>
+        <p class="settings-hint">从 B站等网站自动抓取高考作文素材</p>
+        <button class="btn btn-primary btn-block" id="crawlBtn" onclick="triggerCrawl()">🚀 从 B站爬取素材</button>
         <p id="crawlStatus" class="sync-status" style="display:none"></p>
-        <p class="settings-hint">鎵€鏈夋暟鎹嚜鍔ㄥ悓姝ュ埌浜戠鏁版嵁搴?/p>
-        <button class="btn btn-outline btn-block" onclick="forceCloudSync()">馃攧 绔嬪嵆鍚屾</button>
       </div>
       <div class="settings-section">
-        <h4>馃棏 娓呯┖鏁版嵁</h4>
-        <p class="settings-hint">鍒犻櫎鎵€鏈夌礌鏉愶紝涓嶅彲鎭㈠</p>
-        <button class="btn btn-danger btn-block" onclick="if(confirm('纭畾瑕佹竻绌烘墍鏈夋暟鎹悧锛?)){clearAll()}">娓呯┖鍏ㄩ儴鏁版嵁</button>
+        <h4>☁️ 云端同步</h4>
+        <p class="settings-hint">所有数据自动同步到云端数据库</p>
+        <button class="btn btn-outline btn-block" onclick="forceCloudSync()">🔄 立即同步</button>
+      </div>
+      <div class="settings-section">
+        <h4>🗑 清空数据</h4>
+        <p class="settings-hint">删除所有素材，不可恢复</p>
+        <button class="btn btn-danger btn-block" onclick="if(confirm('确定要清空所有数据吗？')){clearAll()}">清空全部数据</button>
       </div>
     </div>
   </div>
@@ -194,21 +194,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <div class="modal-overlay" id="edit-modal">
   <div class="modal">
-    <div class="modal-header"><h3 id="editTitle">鏂板绱犳潗</h3><button class="btn btn-icon" onclick="closeModal('edit-modal')">鉁?/button></div>
+    <div class="modal-header"><h3 id="editTitle">新增素材</h3><button class="btn btn-icon" onclick="closeModal('edit-modal')">✕</button></div>
     <div class="modal-body">
       <form id="editForm" onsubmit="saveMaterial(event)">
-        <div class="form-group"><label>鏍囬 <span class="required">*</span></label><input type="text" id="etitle" required placeholder="渚嬪锛氬叧浜庡潥鎸佺殑鍚嶈█"></div>
-        <div class="form-group"><label>鍐呭 <span class="required">*</span></label><textarea id="econtent" rows="4" required placeholder="绱犳潗姝ｆ枃鈥?></textarea></div>
+        <div class="form-group"><label>标题 <span class="required">*</span></label><input type="text" id="etitle" required placeholder="例如：关于坚持的名言"></div>
+        <div class="form-group"><label>内容 <span class="required">*</span></label><textarea id="econtent" rows="4" required placeholder="素材正文…"></textarea></div>
         <div class="form-row">
-          <div class="form-group"><label>鍒嗙被</label><select id="ecat"><option value="鍚嶈█璀﹀彞">鍚嶈█璀﹀彞</option><option value="濂借瘝濂藉彞">濂借瘝濂藉彞</option><option value="璇楄瘝鍚嶅彞">璇楄瘝鍚嶅彞</option><option value="浜虹墿浜嬩緥">浜虹墿浜嬩緥</option><option value="鏃朵簨鐑偣">鏃朵簨鐑偣</option><option value="鍝茬悊鏁呬簨">鍝茬悊鏁呬簨</option><option value="浼樼編娈佃惤">浼樼編娈佃惤</option><option value="鍏朵粬">鍏朵粬</option></select></div>
-          <div class="form-group"><label>鏍囩锛堥€楀彿鍒嗛殧锛?/label><input type="text" id="etags" placeholder="鍧氭寔, 鍔卞織"></div>
+          <div class="form-group"><label>分类</label><select id="ecat"><option value="名言警句">名言警句</option><option value="好词好句">好词好句</option><option value="诗词名句">诗词名句</option><option value="人物事例">人物事例</option><option value="时事热点">时事热点</option><option value="哲理故事">哲理故事</option><option value="优美段落">优美段落</option><option value="其他">其他</option></select></div>
+          <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="etags" placeholder="坚持, 励志"></div>
         </div>
-        <div class="form-group"><label>鍑哄/鏉ユ簮</label><input type="text" id="esource" placeholder="渚嬪锛氥€婅璇€?></div>
-        <div class="form-group"><label>澶囨敞</label><textarea id="enotes" rows="2" placeholder="涓汉绗旇鈥?></textarea></div>
+        <div class="form-group"><label>出处/来源</label><input type="text" id="esource" placeholder="例如：《论语》"></div>
+        <div class="form-group"><label>备注</label><textarea id="enotes" rows="2" placeholder="个人笔记…"></textarea></div>
         <input type="hidden" id="eid">
         <div class="form-actions">
-          <button type="button" class="btn btn-outline" onclick="closeModal('edit-modal')">鍙栨秷</button>
-          <button type="submit" class="btn btn-primary">淇濆瓨</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('edit-modal')">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
         </div>
       </form>
     </div>
@@ -217,7 +217,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
-    <div class="modal-header"><h3 id="dtitle"></h3><button class="btn btn-icon" onclick="closeModal('detail-modal')">鉁?/button></div>
+    <div class="modal-header"><h3 id="dtitle"></h3><button class="btn btn-icon" onclick="closeModal('detail-modal')">✕</button></div>
     <div class="modal-body" id="dbody"></div>
   </div>
 </div>
@@ -236,11 +236,11 @@ var syncTimer = null;
 var showPending = false;
 
 var SEED_DATA = [
-  {id:'seed1',title:'鍧﹁瘹浜ゆ祦鈥斺€?024鍏ㄥ浗鐢插嵎浣滄枃绱犳潗',content:'鐪熸鐨勬矡閫氫笉鍦ㄤ簬璇村灏戣瘽锛岃€屽湪浜庢槸鍚︽暍浜庤闇茬湡瀹炵殑鑷繁銆傚潶璇氫氦娴佹槸浜轰笌浜轰箣闂存渶鐝嶈吹鐨勬ˉ姊侊紝瀹冭鎴戜滑瓒呰秺璇В銆佽法瓒婇殧闃傘€傛濡傚彜浜烘墍瑷€锛?鍚涘瓙鍜岃€屼笉鍚岋紝灏忎汉鍚岃€屼笉鍜屻€?瀛︿細鍧﹁瘹锛屽氨鏄浼氬湪灏婇噸宸紓鐨勫墠鎻愪笅鍕囨暍琛ㄨ揪銆?,category:'鍚嶈█璀﹀彞',tags:['娌熼€?,'鍧﹁瘹','浜洪檯鍏崇郴','楂樿€?024'],source:'2024骞村叏鍥界敳鍗蜂綔鏂囬"鐩稿涔嬮亾"',notes:'閫傜敤浜庤璁烘枃涓叧浜庝汉闄呭叧绯汇€佹矡閫氳壓鏈殑璁鸿瘉',status:'approved',created_at:'2026-07-20 12:00:00',updated_at:'2026-07-20 12:00:00'},
-  {id:'seed2',title:'浜虹被鎺㈢储绮剧鐨勫吀鑼冣€斺€斾腑鍥借埅澶╀簨涓?,content:'浠?瀚﹀ē鍥涘彿"鎻紑鏈堣儗绁炵闈㈢罕锛屽埌"澶╅棶涓€鍙?韪忎笂鐏槦鎺㈡祴涔嬫梾锛屽啀鍒?瀚﹀ē浜斿彿"瀹炵幇鍦板澶╀綋閲囨牱杩斿洖锛屼腑鍥借埅澶╀汉鐢ㄤ竴娆℃澹妇璇佹槑锛氫汉绫荤殑鎺㈢储绮剧姘告棤姝㈠銆傛濡傜瀛﹀鍗″皵路钀ㄦ牴鎵€璇达細"鍦ㄦ煇涓湴鏂癸紝鏈変护浜洪毦浠ョ疆淇＄殑浜嬬瓑寰呰鍙戠幇銆?杩欑鎺㈢储鏈煡鐨勫媷姘旓紝姝ｆ槸鎺ㄥ姩浜虹被鏂囨槑鍓嶈鐨勬牴鏈姩鍔涖€?,category:'浜虹墿浜嬩緥',tags:['鑸ぉ','鎺㈢储','鍒涙柊','楂樿€?024'],source:'2024骞存柊璇炬爣II鍗蜂綔鏂囬"鎺㈢储鏈煡"',notes:'鍙敤浜庣鎶€鍙戝睍銆佸垱鏂扮簿绁炪€佷汉绫绘帰绱㈢瓑涓婚',status:'approved',created_at:'2026-07-20 12:01:00',updated_at:'2026-07-20 12:01:00'},
-  {id:'seed3',title:'AI鏃朵唬锛氶棶棰樹細鍙樺皯鍚楋紵',content:'闅忕潃ChatGPT绛変汉宸ユ櫤鑳藉伐鍏风殑鏅強锛屾垜浠技涔庤兘鍦ㄥ嚑绉掗挓鍐呰幏寰椾换浣曢棶棰樼殑绛旀銆備絾闂鐨勬湰璐ㄤ笉鍦ㄤ簬绛旀鐨勫灏戯紝鑰屽湪浜庢彁鍑洪棶棰樼殑鑳藉姏銆傜埍鍥犳柉鍧︽浘璇达細"鎻愬嚭涓€涓棶棰樺線寰€姣旇В鍐充竴涓棶棰樻洿閲嶈銆?褰撴満鍣ㄨ兘澶熷洖绛斾竴鍒囧凡鐭ラ棶棰樻椂锛屼汉绫绘渶瀹濊吹鐨勮兘鍔涙伆鎭版槸鎻愬嚭閭ｄ簺鏈哄櫒浠庢湭鎯宠繃鐨勬柊闂銆侫I涓嶆槸闂鐨勭粓缁撹€咃紝鑰屾槸婵€鍙戞洿娣卞眰鎬濊€冪殑鍌寲鍓傘€?,category:'鏃朵簨鐑偣',tags:['AI','浜哄伐鏅鸿兘','鎬濊鲸','楂樿€?024'],source:'2024骞存柊璇炬爣I鍗蜂綔鏂囬"闂"',notes:'杈╄瘉鎬濊€冩妧鏈笌浜虹被鍏崇郴锛岄€傚悎璁鏂?,status:'approved',created_at:'2026-07-20 12:02:00',updated_at:'2026-07-20 12:02:00'},
-  {id:'seed4',title:'鏈墜路濡欐墜路淇楁墜鈥斺€斿洿妫嬩腑鐨勬櫤鎱?,content:'鍥存涓湁"鏈墜銆佸鎵嬨€佷織鎵?涔嬭銆傛湰鎵嬫槸鍚堜箮妫嬬悊鐨勬瑙勪笅娉曪紝濡欐墜鏄嚭浜烘剰鏂欑殑绮惧涔嬬潃锛屼織鎵嬪垯鏄矊浼煎悎鐞嗗疄鍒欏彈鎹熺殑搴稿父涔嬬潃銆備汉鐢熷妫嬶紝瀛︿範濡傛銆傚敮鏈夋墡瀹炵粌濂芥湰鎵嬶紝鎵嶈兘鍘氱Н钖勫彂锛屽伓寰楀鎵嬶紱濡傛灉鎬ュ姛杩戝埄銆佸ソ楂橀獩杩滐紝杩芥眰琛ㄩ潰鐨勫崕涓借€屽拷瑙嗗熀鏈姛鐨勭Н绱紝缁堝皢钀藉叆淇楁墜涔嬪銆備竾涓堥珮妤煎钩鍦拌捣锛岀湡姝ｇ殑鎴愬姛浠庢潵閮藉缓绔嬪湪鏃ュ涓€鏃ョ殑鎵庡疄鍔姏涔嬩笂銆?,category:'鍝茬悊鏁呬簨',tags:['鍥存','绉疮','鎴愬姛','楂樿€?022'],source:'2022骞存柊璇炬爣I鍗蜂綔鏂囬"鏈墜銆佸鎵嬨€佷織鎵?',notes:'閫傜敤浜庡嫟濂嬨€佺Н绱€佹垚闀裤€佸姟瀹炵瓑涓婚璁鸿瘉',status:'approved',created_at:'2026-07-20 12:03:00',updated_at:'2026-07-20 12:03:00'},
-  {id:'seed5',title:'鏁呬簨鐨勫姏閲忊€斺€斿ソ鏁呬簨鏀瑰彉涓栫晫',content:'濂界殑鏁呬簨鏄湁鍔涢噺鐨勩€傚畠鍙互绌胯秺鏃堕棿鐨勯暱娌筹紝璺ㄨ秺绌洪棿鐨勯樆闅旓紝灏嗕竴浠ｅ張涓€浠ｄ汉鐨勬儏鎰熶笌鏅烘収浼犻€掍笅鍘汇€備粠銆婅瘲缁忋€嬬殑"鍏冲叧闆庨笭"鍒伴瞾杩呯殑"鍛愬枈"锛屼粠鍙搁┈杩佺殑銆婂彶璁般€嬪埌璺仴鐨勩€婂钩鍑＄殑涓栫晫銆嬶紝姣忎竴涓墦鍔ㄤ汉蹇冪殑鏁呬簨锛岄兘鏄竴鎵囬€氬線鐞嗚В涓庡叡鎯呯殑绐椼€傛晠浜嬭鎴戜滑鐪嬭浠栦汉锛屼篃鐪嬫竻鑷繁锛涙晠浜嬭涓綋缁忛獙鍙樻垚闆嗕綋璁板繂锛岃鐬棿鐨勬劅鍔ㄦ矇娣€涓烘案鎭掔殑璐㈠瘜銆?,category:'浼樼編娈佃惤',tags:['鏁呬簨','鏂囧','琛ㄨ揪','楂樿€?023'],source:'2023骞存柊璇炬爣I鍗蜂綔鏂囬"鏁呬簨鐨勫姏閲?',notes:'鍙敤浜庤璁烘枃寮€澶存垨缁撳熬娈电殑浼樼編琛ㄨ揪',status:'approved',created_at:'2026-07-20 12:04:00',updated_at:'2026-07-20 12:04:00'}
+  {id:'seed1',title:'坦诚交流——2024全国甲卷作文素材',content:'真正的沟通不在于说多少话，而在于是否敢于袒露真实的自己。坦诚交流是人与人之间最珍贵的桥梁，它让我们超越误解、跨越隔阂。正如古人所言："君子和而不同，小人同而不和。"学会坦诚，就是学会在尊重差异的前提下勇敢表达。',category:'名言警句',tags:['沟通','坦诚','人际关系','高考2024'],source:'2024年全国甲卷作文题"相处之道"',notes:'适用于议论文中关于人际关系、沟通艺术的论证',status:'approved',created_at:'2026-07-20 12:00:00',updated_at:'2026-07-20 12:00:00'},
+  {id:'seed2',title:'人类探索精神的典范——中国航天事业',content:'从"嫦娥四号"揭开月背神秘面纱，到"天问一号"踏上火星探测之旅，再到"嫦娥五号"实现地外天体采样返回，中国航天人用一次次壮举证明：人类的探索精神永无止境。正如科学家卡尔·萨根所说："在某个地方，有令人难以置信的事等待被发现。"这种探索未知的勇气，正是推动人类文明前行的根本动力。',category:'人物事例',tags:['航天','探索','创新','高考2024'],source:'2024年新课标II卷作文题"探索未知"',notes:'可用于科技发展、创新精神、人类探索等主题',status:'approved',created_at:'2026-07-20 12:01:00',updated_at:'2026-07-20 12:01:00'},
+  {id:'seed3',title:'AI时代：问题会变少吗？',content:'随着ChatGPT等人工智能工具的普及，我们似乎能在几秒钟内获得任何问题的答案。但问题的本质不在于答案的多少，而在于提出问题的能力。爱因斯坦曾说："提出一个问题往往比解决一个问题更重要。"当机器能够回答一切已知问题时，人类最宝贵的能力恰恰是提出那些机器从未想过的新问题。AI不是问题的终结者，而是激发更深层思考的催化剂。',category:'时事热点',tags:['AI','人工智能','思辨','高考2024'],source:'2024年新课标I卷作文题"问题"',notes:'辩证思考技术与人类关系，适合议论文',status:'approved',created_at:'2026-07-20 12:02:00',updated_at:'2026-07-20 12:02:00'},
+  {id:'seed4',title:'本手·妙手·俗手——围棋中的智慧',content:'围棋中有"本手、妙手、俗手"之说。本手是合乎棋理的正规下法，妙手是出人意料的精妙之着，俗手则是貌似合理实则受损的庸常之着。人生如棋，学习如棋。唯有扎实练好本手，才能厚积薄发，偶得妙手；如果急功近利、好高骛远，追求表面的华丽而忽视基本功的积累，终将落入俗手之境。万丈高楼平地起，真正的成功从来都建立在日复一日的扎实努力之上。',category:'哲理故事',tags:['围棋','积累','成功','高考2022'],source:'2022年新课标I卷作文题"本手、妙手、俗手"',notes:'适用于勤奋、积累、成长、务实等主题论证',status:'approved',created_at:'2026-07-20 12:03:00',updated_at:'2026-07-20 12:03:00'},
+  {id:'seed5',title:'故事的力量——好故事改变世界',content:'好的故事是有力量的。它可以穿越时间的长河，跨越空间的阻隔，将一代又一代人的情感与智慧传递下去。从《诗经》的"关关雎鸠"到鲁迅的"呐喊"，从司马迁的《史记》到路遥的《平凡的世界》，每一个打动人心的故事，都是一扇通往理解与共情的窗。故事让我们看见他人，也看清自己；故事让个体经验变成集体记忆，让瞬间的感动沉淀为永恒的财富。',category:'优美段落',tags:['故事','文学','表达','高考2023'],source:'2023年新课标I卷作文题"故事的力量"',notes:'可用于议论文开头或结尾段的优美表达',status:'approved',created_at:'2026-07-20 12:04:00',updated_at:'2026-07-20 12:04:00'}
 ];
 
 function load() {
@@ -269,38 +269,38 @@ function scheduleCloudSync() {
 
 async function cloudSync() {
   try {
-    setSyncStatus('online', '鍚屾涓?);
+    setSyncStatus('online', '同步中');
     var all = materials.concat(pending);
     var resp = await fetch(API + '/sync', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(all)
     });
-    if (resp.ok) { setSyncStatus('online', '宸插悓姝?); }
-    else { setSyncStatus('offline', '澶辫触'); }
-  } catch(e) { setSyncStatus('offline', '绂荤嚎'); }
+    if (resp.ok) { setSyncStatus('online', '已同步'); }
+    else { setSyncStatus('offline', '失败'); }
+  } catch(e) { setSyncStatus('offline', '离线'); }
 }
-
-async function forceCloudSync() { await cloudSync(); toast('鍚屾瀹屾垚'); }
 
 async function triggerCrawl() {
   var btn = document.getElementById('crawlBtn');
   var st = document.getElementById('crawlStatus');
-  btn.disabled = true; btn.textContent = '鐖彇涓?..'; st.style.display = 'block'; st.textContent = '姝ｅ湪浠嶣绔欐姄鍙栫礌鏉?..';
+  btn.disabled = true; btn.textContent = '爬取中...'; st.style.display = 'block'; st.textContent = '正在从B站抓取素材...';
   try {
     var res = await fetch('/api/crawl', { method: 'POST' });
     var data = await res.json();
     if (data.added > 0) {
-      st.textContent = '鎴愬姛鎶撳彇 ' + data.added + ' 绡囩礌鏉愶紒鍒板緟瀹℃牳鏌ョ湅';
+      st.textContent = '成功抓取 ' + data.added + ' 篇素材！到待审核查看';
       loadPendingCount();
     } else {
-      st.textContent = '鏈壘鍒版柊绱犳潗锛圔绔欏彲鑳介檺娴侊紝璇风敤鐢佃剳杩愯鐖彇绱犳潗.bat锛?;
+      st.textContent = '未找到新素材（需从中国IP访问，请用电脑运行爬取素材.bat）';
     }
   } catch(e) {
-    st.textContent = '鐖彇澶辫触锛岃鐢ㄧ數鑴戣繍琛岀埇鍙栫礌鏉?bat';
+    st.textContent = '爬取失败，请用电脑运行爬取素材.bat';
   }
-  btn.disabled = false; btn.textContent = '浠嶣绔欑埇鍙栫礌鏉?;
+  btn.disabled = false; btn.textContent = '🚀 从 B站爬取素材';
 }
+
+async function forceCloudSync() { await cloudSync(); toast('同步完成'); }
 
 async function cloudLoad() {
   try {
@@ -322,7 +322,7 @@ async function cloudLoad() {
       else { materials.push(m); }
     });
     save(); render(); loadPendingCount();
-    setSyncStatus('online', '宸插悓姝?);
+    setSyncStatus('online', '已同步');
   } catch(e) {}
 }
 
@@ -384,17 +384,17 @@ function renderPending(s) {
 
   var list = document.getElementById('list');
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">馃帀</div><p>娌℃湁寰呭鏍哥礌鏉?/p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🎉</div><p>没有待审核素材</p></div>';
   } else {
-    list.innerHTML = '<div style="padding:4px 0 8px;font-size:.85rem;color:var(--ts)">寰呭鏍?' + items.length + ' 鏉?鈥?姣忓ぉ8鐐硅嚜鍔ㄧ埇鍙?/div>' +
+    list.innerHTML = '<div style="padding:4px 0 8px;font-size:.85rem;color:var(--ts)">待审核 ' + items.length + ' 条 — 每天8点自动爬取</div>' +
       items.map(function(m) {
         return '<div class="card pending-card" onclick="viewPending(\''+m.id+'\')">'+
-          '<div class="card-review-badge">寰呭鏍?/div>'+
+          '<div class="card-review-badge">待审核</div>'+
           '<div class="card-header"><span class="card-title">'+esc(m.title)+'</span></div>'+
           '<div class="card-meta"><span class="card-cat">'+esc(m.category)+'</span>'+
           (m.tags||[]).map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join('')+'</div>'+
           '<div class="card-preview">'+esc(m.content)+'</div>'+
-          (m.source?'<div class="card-source">馃摉 '+esc(m.source)+'</div>':'')+'</div>';
+          (m.source?'<div class="card-source">📖 '+esc(m.source)+'</div>':'')+'</div>';
       }).join('');
   }
 }
@@ -412,16 +412,16 @@ function renderApproved(s) {
 
   var list = document.getElementById('list');
   if (items.length === 0) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">馃摥</div><p>娌℃湁鍖归厤鐨勭礌鏉?/p></div>';
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>没有匹配的素材</p></div>';
   } else {
     list.innerHTML = items.map(function(m) {
       return '<div class="card" onclick="viewDetail(\''+m.id+'\')">'+
         '<div class="card-header"><span class="card-title">'+esc(m.title)+'</span>'+
-        '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon btn-sm" onclick="copyText(\''+m.id+'\')">馃搵</button></div></div>'+
+        '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon btn-sm" onclick="copyText(\''+m.id+'\')">📋</button></div></div>'+
         '<div class="card-meta"><span class="card-cat">'+esc(m.category)+'</span>'+
         (m.tags||[]).map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join('')+'</div>'+
         '<div class="card-preview">'+esc(m.content)+'</div>'+
-        (m.source?'<div class="card-source">馃摉 '+esc(m.source)+'</div>':'')+'</div>';
+        (m.source?'<div class="card-source">📖 '+esc(m.source)+'</div>':'')+'</div>';
     }).join('');
   }
 }
@@ -431,13 +431,13 @@ function renderCategories() {
   var cats = [];
   materials.forEach(function(m) { if (cats.indexOf(m.category) < 0) cats.push(m.category); });
   document.getElementById('catCount').textContent = cats.length;
-  var preset = ['鍚嶈█璀﹀彞','濂借瘝濂藉彞','璇楄瘝鍚嶅彞','浜虹墿浜嬩緥','鏃朵簨鐑偣','鍝茬悊鏁呬簨','浼樼編娈佃惤','鍏朵粬'];
+  var preset = ['名言警句','好词好句','诗词名句','人物事例','时事热点','哲理故事','优美段落','其他'];
   var ordered = preset.filter(function(c) { return cats.indexOf(c) >= 0; });
   var others = cats.filter(function(c) { return preset.indexOf(c) < 0; });
   var allCats = ordered.concat(others);
-  var h = '<button class="cat-item '+(currentCat===''&&!showPending?'active':'')+'" onclick="filterCat(\'\')">馃搵 鍏ㄩ儴 <span class="count">'+materials.length+'</span></button>';
+  var h = '<button class="cat-item '+(currentCat===''&&!showPending?'active':'')+'" onclick="filterCat(\'\')">📋 全部 <span class="count">'+materials.length+'</span></button>';
   allCats.forEach(function(c) {
-    h += '<button class="cat-item '+(currentCat===c?'active':'')+'" onclick="filterCat(\''+esc(c)+'\')">馃搶 '+esc(c)+' <span class="count">'+materials.filter(function(m){return m.category===c;}).length+'</span></button>';
+    h += '<button class="cat-item '+(currentCat===c?'active':'')+'" onclick="filterCat(\''+esc(c)+'\')">📌 '+esc(c)+' <span class="count">'+materials.filter(function(m){return m.category===c;}).length+'</span></button>';
   });
   document.getElementById('catNav').innerHTML = h;
   document.getElementById('reviewBtn').classList.toggle('active', showPending);
@@ -459,14 +459,14 @@ function viewPending(id) {
   var m = pending.find(function(x){return x.id===id;});
   if (!m) return;
   document.getElementById('dtitle').textContent = m.title;
-  var h = '<div class="form-group"><label>鏉ユ簮</label><div>'+esc(m.source||'鏈煡')+'</div></div>';
-  h += '<div class="form-group"><label>AI鍒嗙被</label><div><span class="card-cat">'+esc(m.category)+'</span> '+(m.tags||[]).map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join(' ')+'</div></div>';
-  h += '<div class="form-group"><label>鍐呭</label><div style="white-space:pre-wrap;line-height:1.8">'+esc(m.content)+'</div></div>';
-  if (m.notes) h += '<div class="form-group"><label>澶囨敞</label><div>'+esc(m.notes)+'</div></div>';
+  var h = '<div class="form-group"><label>来源</label><div>'+esc(m.source||'未知')+'</div></div>';
+  h += '<div class="form-group"><label>AI分类</label><div><span class="card-cat">'+esc(m.category)+'</span> '+(m.tags||[]).map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join(' ')+'</div></div>';
+  h += '<div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">'+esc(m.content)+'</div></div>';
+  if (m.notes) h += '<div class="form-group"><label>备注</label><div>'+esc(m.notes)+'</div></div>';
   h += '<div style="display:flex;gap:8px;margin-top:16px">'+
-    '<button class="btn btn-success" onclick="approveItem(\''+m.id+'\')">鉁?閫氳繃</button>'+
-    '<button class="btn btn-outline" onclick="closeModal(\'detail-modal\');openEditPending(\''+m.id+'\')">鉁忥笍 缂栬緫鍚庨€氳繃</button>'+
-    '<button class="btn btn-danger" onclick="rejectItem(\''+m.id+'\')">鉂?鎷掔粷</button></div>';
+    '<button class="btn btn-success" onclick="approveItem(\''+m.id+'\')">✅ 通过</button>'+
+    '<button class="btn btn-outline" onclick="closeModal(\'detail-modal\');openEditPending(\''+m.id+'\')">✏️ 编辑后通过</button>'+
+    '<button class="btn btn-danger" onclick="rejectItem(\''+m.id+'\')">❌ 拒绝</button></div>';
   document.getElementById('dbody').innerHTML = h;
   openModal('detail-modal');
 }
@@ -480,25 +480,25 @@ async function approveItem(id) {
   pending = pending.filter(function(x){return x.id!==id;});
   save(); render(); closeModal('detail-modal');
   try { await fetch(API + '/' + id + '/approve', {method:'POST'}); } catch(e) {}
-  toast('宸查€氳繃');
+  toast('已通过');
 }
 
 async function rejectItem(id) {
-  if (!confirm('纭畾鎷掔粷骞跺垹闄わ紵')) return;
+  if (!confirm('确定拒绝并删除？')) return;
   pending = pending.filter(function(x){return x.id!==id;});
   save(); render(); closeModal('detail-modal');
   try { await fetch(API + '/' + id, {method:'DELETE'}); } catch(e) {}
-  toast('宸叉嫆缁?);
+  toast('已拒绝');
 }
 
 function openEditPending(id) {
   var m = pending.find(function(x){return x.id===id;});
   if (!m) return;
   editId = id;
-  document.getElementById('editTitle').textContent = '缂栬緫骞跺鏍?;
+  document.getElementById('editTitle').textContent = '编辑并审核';
   document.getElementById('etitle').value = m.title || '';
   document.getElementById('econtent').value = m.content || '';
-  document.getElementById('ecat').value = m.category || '鍚嶈█璀﹀彞';
+  document.getElementById('ecat').value = m.category || '名言警句';
   document.getElementById('etags').value = m.tags ? m.tags.join(', ') : '';
   document.getElementById('esource').value = m.source || '';
   document.getElementById('enotes').value = m.notes || '';
@@ -513,10 +513,10 @@ function openEdit(id) {
   showPending = false;
   editId = id || null;
   var m = id ? materials.find(function(x){return x.id===id;}) : null;
-  document.getElementById('editTitle').textContent = m ? '缂栬緫绱犳潗' : '鏂板绱犳潗';
+  document.getElementById('editTitle').textContent = m ? '编辑素材' : '新增素材';
   document.getElementById('etitle').value = m ? m.title : '';
   document.getElementById('econtent').value = m ? m.content : '';
-  document.getElementById('ecat').value = m ? m.category : '鍚嶈█璀﹀彞';
+  document.getElementById('ecat').value = m ? m.category : '名言警句';
   document.getElementById('etags').value = m && m.tags ? m.tags.join(', ') : '';
   document.getElementById('esource').value = m ? m.source : '';
   document.getElementById('enotes').value = m ? m.notes : '';
@@ -528,11 +528,11 @@ function saveMaterial(e) {
   e.preventDefault();
   var title = document.getElementById('etitle').value.trim();
   var content = document.getElementById('econtent').value.trim();
-  if (!title || !content) return toast('鏍囬鍜屽唴瀹逛笉鑳戒负绌?);
+  if (!title || !content) return toast('标题和内容不能为空');
   var data = {
     title:title, content:content,
     category:document.getElementById('ecat').value,
-    tags:document.getElementById('etags').value.split(/[,锛宂/).map(function(t){return t.trim();}).filter(Boolean),
+    tags:document.getElementById('etags').value.split(/[,，]/).map(function(t){return t.trim();}).filter(Boolean),
     source:document.getElementById('esource').value.trim(),
     notes:document.getElementById('enotes').value.trim(),
     status:'approved',
@@ -556,7 +556,7 @@ function saveMaterial(e) {
     materials.push(data);
   }
   save(); render(); closeModal('edit-modal');
-  toast(editId ? '宸叉洿鏂? : '宸叉坊鍔?);
+  toast(editId ? '已更新' : '已添加');
   editId = null;
 }
 
@@ -564,39 +564,39 @@ function viewDetail(id) {
   var m = materials.find(function(x){return x.id===id;});
   if (!m) return;
   document.getElementById('dtitle').textContent = m.title;
-  var h = '<div class="form-group"><label>鍒嗙被</label><div><span class="card-cat">'+esc(m.category)+'</span></div></div>';
-  if (m.tags && m.tags.length) h += '<div class="form-group"><label>鏍囩</label><div>'+m.tags.map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join(' ')+'</div></div>';
-  h += '<div class="form-group"><label>鍐呭</label><div style="white-space:pre-wrap;line-height:1.8">'+esc(m.content)+'</div></div>';
-  if (m.source) h += '<div class="form-group"><label>鍑哄</label><div>'+esc(m.source)+'</div></div>';
-  if (m.notes) h += '<div class="form-group"><label>澶囨敞</label><div>'+esc(m.notes)+'</div></div>';
-  h += '<div class="form-group"><label>鏇存柊鏃堕棿</label><div class="text-muted">'+m.updated_at+'</div></div>';
+  var h = '<div class="form-group"><label>分类</label><div><span class="card-cat">'+esc(m.category)+'</span></div></div>';
+  if (m.tags && m.tags.length) h += '<div class="form-group"><label>标签</label><div>'+m.tags.map(function(t){return'<span class="card-tag">'+esc(t)+'</span>';}).join(' ')+'</div></div>';
+  h += '<div class="form-group"><label>内容</label><div style="white-space:pre-wrap;line-height:1.8">'+esc(m.content)+'</div></div>';
+  if (m.source) h += '<div class="form-group"><label>出处</label><div>'+esc(m.source)+'</div></div>';
+  if (m.notes) h += '<div class="form-group"><label>备注</label><div>'+esc(m.notes)+'</div></div>';
+  h += '<div class="form-group"><label>更新时间</label><div class="text-muted">'+m.updated_at+'</div></div>';
   h += '<div style="display:flex;gap:8px;margin-top:16px">'+
-    '<button class="btn btn-outline" onclick="copyText(\''+m.id+'\');closeModal(\'detail-modal\')">馃搵 澶嶅埗</button>'+
-    '<button class="btn btn-primary" onclick="closeModal(\'detail-modal\');openEdit(\''+m.id+'\')">鉁忥笍 缂栬緫</button>'+
-    '<button class="btn btn-danger" onclick="closeModal(\'detail-modal\');deleteMaterial(\''+m.id+'\')">馃棏 鍒犻櫎</button></div>';
+    '<button class="btn btn-outline" onclick="copyText(\''+m.id+'\');closeModal(\'detail-modal\')">📋 复制</button>'+
+    '<button class="btn btn-primary" onclick="closeModal(\'detail-modal\');openEdit(\''+m.id+'\')">✏️ 编辑</button>'+
+    '<button class="btn btn-danger" onclick="closeModal(\'detail-modal\');deleteMaterial(\''+m.id+'\')">🗑 删除</button></div>';
   document.getElementById('dbody').innerHTML = h;
   openModal('detail-modal');
 }
 
 function deleteMaterial(id) {
-  if (!confirm('纭畾鍒犻櫎锛?)) return;
+  if (!confirm('确定删除？')) return;
   materials = materials.filter(function(x){return x.id!==id;});
   save(); render();
   fetch(API + '/' + id, {method:'DELETE'}).catch(function(){});
-  toast('宸插垹闄?);
+  toast('已删除');
 }
 
 async function copyText(id) {
   var source = materials.concat(pending);
   var m = source.find(function(x){return x.id===id;});
   if (!m) return;
-  try { await navigator.clipboard.writeText(m.content); toast('宸插鍒?); }
+  try { await navigator.clipboard.writeText(m.content); toast('已复制'); }
   catch(e) {
     var ta = document.createElement('textarea');
     ta.value = m.content; ta.style.position = 'fixed'; ta.style.left = '-9999px';
     document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
-    toast('宸插鍒?);
+    toast('已复制');
   }
 }
 
@@ -606,7 +606,7 @@ function exportData() {
   a.href = URL.createObjectURL(blob);
   a.download = 'materials-'+new Date().toISOString().slice(0,10)+'.json';
   a.click(); URL.revokeObjectURL(a.href);
-  toast('瀵煎嚭鎴愬姛');
+  toast('导出成功');
 }
 
 function importData(input) {
@@ -615,7 +615,7 @@ function importData(input) {
   reader.onload = function(e) {
     try {
       var items = JSON.parse(e.target.result);
-      if (!Array.isArray(items)) return toast('鏍煎紡閿欒');
+      if (!Array.isArray(items)) return toast('格式错误');
       var added = 0, skipped = 0;
       items.forEach(function(item) {
         if (materials.find(function(m){return m.title===item.title&&m.content===item.content;}) ||
@@ -623,7 +623,7 @@ function importData(input) {
         var obj = {
           id: item.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),
           title:item.title||'', content:item.content||'',
-          category:item.category||'鍏朵粬', tags:item.tags||[],
+          category:item.category||'其他', tags:item.tags||[],
           source:item.source||'', notes:item.notes||'',
           status:item.status||'approved',
           created_at:item.created_at||ts(), updated_at:ts()
@@ -633,8 +633,8 @@ function importData(input) {
         added++;
       });
       save(); render(); closeModal('settings-modal');
-      toast('鏂板 '+added+' 鏉★紝璺宠繃 '+skipped+' 鏉?);
-    } catch(ex) { toast('鏂囦欢鏍煎紡閿欒'); }
+      toast('新增 '+added+' 条，跳过 '+skipped+' 条');
+    } catch(ex) { toast('文件格式错误'); }
     input.value = '';
   };
   reader.readAsText(file);
@@ -643,7 +643,7 @@ function importData(input) {
 function clearAll() {
   materials = []; pending = []; save(); render();
   fetch(API + '/clear', {method:'POST'}).catch(function(){});
-  toast('宸叉竻绌?);
+  toast('已清空');
 }
 
 function openModal(id) { document.getElementById(id).classList.add('show'); }
