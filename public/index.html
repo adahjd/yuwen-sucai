@@ -303,6 +303,7 @@ async function triggerCrawl() {
 async function forceCloudSync() { await cloudSync(); toast('同步完成'); }
 
 async function cloudLoad() {
+  if (window._cleared) { window._cleared = false; return; }
   try {
     var resp = await fetch(API + '?all=1');
     if (!resp.ok) return;
@@ -643,6 +644,7 @@ function importData(input) {
 function clearAll() {
   materials = []; pending = []; save(); render();
   fetch(API + '/clear', {method:'POST'}).catch(function(){});
+  window._cleared = true;
   toast('已清空');
 }
 
