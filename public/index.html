@@ -293,7 +293,7 @@ async function triggerCrawl() {
   }
   btn.disabled = false; btn.textContent = "?? Á¢¼´ÅÀÈ¡ËØ²Ä";
 }
-function forceCloudSync() { await cloudSync(); toast('åŒæ­¥å®Œæˆ'); }
+async function forceCloudSync() { await cloudSync(); toast('åŒæ­¥å®Œæˆ'); }
 
 async function cloudLoad() {
   try {
