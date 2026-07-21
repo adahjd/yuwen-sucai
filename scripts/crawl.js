@@ -299,7 +299,9 @@ async function save(items) {
   var added = 0;
   for (var i = 0; i < items.length; i++) {
     var x = items[i];
-    var id = 'cr_' + Date.now().toString(36) + '_' + i + '_' + Math.random().toString(36).slice(2, 6);
+          var existing = await sql`SELECT id FROM materials WHERE title = ${x.title.slice(0,100)} LIMIT 1`;
+      if (existing.length > 0) { console.log("    skip dup"); continue; }
+var id = 'cr_' + Date.now().toString(36) + '_' + i + '_' + Math.random().toString(36).slice(2, 6);
     var ts = new Date().toISOString().replace('T', ' ').slice(0, 19);
     try {
       await sql`
