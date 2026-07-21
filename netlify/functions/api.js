@@ -122,6 +122,8 @@ async function miniCrawl() {
         if (!title || content.length < 500) continue;
 
         var cls = quickClassify({ title: title, content: content });
+        var existing = await sql`SELECT id FROM materials WHERE title = ${title.slice(0,100)} LIMIT 1`;
+        if (existing.length > 0) continue;
         var id = 'cr_' + Date.now().toString(36) + '_' + items.length + '_' + Math.random().toString(36).slice(2, 6);
         var ts = now();
         await sql`
