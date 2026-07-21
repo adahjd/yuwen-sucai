@@ -29,7 +29,7 @@ exports.handler = async function(event) {
   var method = event.httpMethod;
 
   try {
-    // GET /api/materials â€” list (default: approved only)
+    // GET /api/materials â€?list (default: approved only)
     if (method === 'GET' && path === '/materials') {
       var all = event.queryStringParameters && event.queryStringParameters.all === '1';
       var rows = all
@@ -93,7 +93,7 @@ exports.handler = async function(event) {
       }
       if (localIds.size > 0) {
         var allIds = Array.from(localIds);
-        await sql`DELETE FROM materials WHERE id NOT IN (SELECT unnest(${allIds}::text[]))`;
+        await sql`DELETE FROM materials WHERE id NOT IN (SELECT unnest(${allIds}::text[])) AND status != 'pending'`;
       }
       return json({synced:items.length});
     }
