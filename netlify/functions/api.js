@@ -218,6 +218,8 @@ exports.handler = async function(event) {
       if (localIds.size > 0) {
         var allIds = Array.from(localIds);
         await sql`DELETE FROM materials WHERE id NOT IN (SELECT unnest(${allIds}::text[])) AND status != 'pending'`;
+      } else {
+        await sql`DELETE FROM materials WHERE status = 'approved'`;
       }
       return json({ synced: items.length });
     }
