@@ -2,21 +2,19 @@ const { neon } = require('@neondatabase/serverless');
 const sql = neon(process.env.DATABASE_URL);
 
 async function initDB() {
-  try {
-    var cols = await sql`SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'materials' AND column_name = 'id'`;
-    if (cols.length > 0 && cols[0].data_type === 'integer') {
-      await sql`DROP TABLE materials`;
-    }
-  } catch (e) {}
+  // 幂等迁移：绝不 DROP 表（旧逻辑会因 id 为 integer 而清空整表，存在丢数据风险）
   await sql`
     CREATE TABLE IF NOT EXISTS materials (
       id TEXT PRIMARY KEY, title TEXT NOT NULL, content TEXT NOT NULL,
-      category TEXT DEFAULT 'Other', tags JSONB DEFAULT '[]',
+      category TEXT DEFAULT '其他', tags JSONB DEFAULT '[]',
       source TEXT DEFAULT '', notes TEXT DEFAULT '',
+      status TEXT DEFAULT 'pending', raw_url TEXT DEFAULT '', content_hash TEXT DEFAULT '',
       created_at TEXT DEFAULT '', updated_at TEXT DEFAULT ''
     )
   `;
-  try { await sql`ALTER TABLE materials ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'approved'`; } catch(e) {}
+  await sql`ALTER TABLE materials ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'approved'`;
+  await sql`ALTER TABLE materials ADD COLUMN IF NOT EXISTS raw_url TEXT DEFAULT ''`;
+  await sql`ALTER TABLE materials ADD COLUMN IF NOT EXISTS content_hash TEXT DEFAULT ''`;
   await sql`UPDATE materials SET status = 'approved' WHERE status IS NULL`;
 }
 
@@ -122,6 +120,8 @@ async function miniCrawl() {
         if (!title || content.length < 500) continue;
 
         var cls = quickClassify({ title: title, content: content });
+        var existing = await sql`SELECT id FROM materials WHERE title = ${title.slice(0,100)} LIMIT 1`;
+        if (existing.length > 0) continue;
         var id = 'cr_' + Date.now().toString(36) + '_' + items.length + '_' + Math.random().toString(36).slice(2, 6);
         var ts = now();
         await sql`
@@ -216,6 +216,8 @@ exports.handler = async function(event) {
       if (localIds.size > 0) {
         var allIds = Array.from(localIds);
         await sql`DELETE FROM materials WHERE id NOT IN (SELECT unnest(${allIds}::text[])) AND status != 'pending'`;
+      } else {
+        await sql`DELETE FROM materials WHERE status = 'approved'`;
       }
       return json({ synced: items.length });
     }
