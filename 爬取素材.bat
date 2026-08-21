@@ -1,9 +1,9 @@
 @echo off
-cd /d "C:\Users\Administrator\Documents\Codex\2026-07-16\summary-web-json-node-js-express"
-set DATABASE_URL=postgresql://neondb_owner:npg_lL0BdPKSI6Hc@ep-royal-feather-aubs3qr7-pooler.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-set USE_AI=false
+chcp 65001 >nul
+cd /d "%~dp0"
 echo === 语文素材爬虫 ===
-node scripts/crawl.js
+echo 读取 .env 中的 DATABASE_URL（如未配置请先复制 .env.example 为 .env）
+node scripts\crawl.js
 echo.
 echo === 完成！去 https://yuwensucai.netlify.app/ 查看待审核素材 ===
 pause
