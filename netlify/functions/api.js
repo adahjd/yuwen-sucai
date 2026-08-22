@@ -1,4 +1,6 @@
 const { neon } = require('@neondatabase/serverless');
+const crypto = require('crypto');
+const cheerio = require('cheerio');
 const sql = neon(process.env.DATABASE_URL);
 
 async function initDB() {
@@ -86,54 +88,95 @@ function quickClassify(item) {
   return { category: cat, tags: tags.slice(0, 5) };
 }
 
-async function miniCrawl() {
-  var keywords = ['高考作文素材', '人民日报作文素材', '高考议论文素材'];
-  var seen = {};
+// ===== 快速爬取（人民网 + 作文网；B站海外被屏蔽，故按钮不抓它）=====
+function decodeHtml(buf) {
+  var head = new TextDecoder('latin1').decode(buf.slice(0, 1500));
+  var m = head.match(/charset=["']?([a-zA-Z0-9_-]+)/i);
+  var cs = m ? m[1].toLowerCase() : '';
+  if (cs.indexOf('gb') >= 0 || cs.indexOf('2312') >= 0) return new TextDecoder('gbk').decode(buf);
+  return new TextDecoder('utf-8').decode(buf);
+}
+
+async function fetchBuf(url) {
+  try {
+    var res = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'zh-CN,zh;q=0.9' } });
+    if (!res.ok) return null;
+    return await res.arrayBuffer();
+  } catch (e) { return null; }
+}
+
+async function quickCrawl() {
   var items = [];
+  var seen = {};
 
-  for (var i = 0; i < keywords.length && items.length < 5; i++) {
-    try {
-      var searchUrl = 'https://api.bilibili.com/x/web-interface/search/type?search_type=article&keyword=' + encodeURIComponent(keywords[i]) + '&page=1';
-      var searchData = await fetchJson(searchUrl, {
-        'Referer': 'https://www.bilibili.com/',
-        'Origin': 'https://www.bilibili.com'
-      });
-      if (!searchData || searchData.code !== 0 || !searchData.data) continue;
-
-      var articles = (searchData.data.result || []).slice(0, 3);
-      for (var j = 0; j < articles.length && items.length < 5; j++) {
-        var a = articles[j];
-        var aid = a.id;
-        if (!aid || seen[aid]) continue;
-        seen[aid] = true;
-
-        var detailUrl = 'https://api.bilibili.com/x/article/view?id=' + aid;
-        var detailData = await fetchJson(detailUrl, {
-          'Referer': 'https://www.bilibili.com/read/cv' + aid,
-          'Origin': 'https://www.bilibili.com'
-        });
-        if (!detailData || detailData.code !== 0 || !detailData.data) continue;
-
-        var art = detailData.data;
-        var title = String(art.title || '').replace(/<[^>]+>/g, '').trim().slice(0, 100);
-        var content = extractText(art.content || '');
-        if (!title || content.length < 500) continue;
-
-        var cls = quickClassify({ title: title, content: content });
-        var existing = await sql`SELECT id FROM materials WHERE title = ${title.slice(0,100)} LIMIT 1`;
-        if (existing.length > 0) continue;
-        var id = 'cr_' + Date.now().toString(36) + '_' + items.length + '_' + Math.random().toString(36).slice(2, 6);
-        var ts = now();
-        await sql`
-          INSERT INTO materials (id, title, content, category, tags, source, notes, status, created_at, updated_at)
-          VALUES (${id}, ${title.slice(0, 200)}, ${content.slice(0, 5000)}, ${cls.category},
-            ${JSON.stringify(cls.tags)}, ${'B站专栏'}, ${'快速爬取'}, 'pending', ${ts}, ${ts})
-          ON CONFLICT (id) DO NOTHING
-        `;
-        items.push({ title: title, len: content.length });
-      }
-    } catch(e) {}
+  async function addMaterial(title, content, category, tags, source, url) {
+    if (!title || !content || content.length < 120) return;
+    var hash = crypto.createHash('sha256').update(content, 'utf-8').digest('hex');
+    var existing = await sql`SELECT id FROM materials WHERE content_hash = ${hash} OR (raw_url = ${url} AND raw_url <> '') LIMIT 1`;
+    if (existing.length > 0) return;
+    var id = 'cr_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    var ts = now();
+    await sql`
+      INSERT INTO materials (id, title, content, category, tags, source, notes, status, raw_url, content_hash, created_at, updated_at)
+      VALUES (${id}, ${title.slice(0, 200)}, ${content.slice(0, 5000)}, ${category}, ${JSON.stringify(tags)},
+        ${source}, ${'爬取|' + url}, 'pending', ${url}, ${hash}, ${ts}, ${ts})
+      ON CONFLICT (id) DO NOTHING
+    `;
+    items.push({ title: title, len: content.length });
   }
+
+  // ① 人民网观点（时事热点）
+  try {
+    var listBuf = await fetchBuf('http://opinion.people.com.cn/');
+    if (listBuf) {
+      var $ = cheerio.load(new TextDecoder('utf-8').decode(listBuf));
+      var links = [];
+      $('a[href]').each(function () {
+        var h = $(this).attr('href') || '';
+        if (/n1\/\d{4}\/\d{4}\/c\d+-\d+\.html/.test(h)) {
+          var abs = /^https?:\/\//.test(h) ? h : 'http://opinion.people.com.cn' + (h.charAt(0) === '/' ? '' : '/') + h;
+          if (!seen[abs]) { seen[abs] = true; links.push(abs); }
+        }
+      });
+      for (var i = 0; i < links.length && i < 3; i++) {
+        var aBuf = await fetchBuf(links[i]);
+        if (!aBuf) continue;
+        var a$ = cheerio.load(new TextDecoder('utf-8').decode(aBuf));
+        var title = a$('h1').first().text().trim() || a$('h2').first().text().trim() || a$('title').text().trim();
+        title = title.split('--')[0].split('-人民网')[0].trim();
+        var content = a$('.rm_txt_con').find('p').map(function () { return a$(this).text().trim(); }).get().filter(Boolean).join('\n');
+        await addMaterial(title, content, '时事热点', ['时事热点', '时评'], '人民网观点', links[i]);
+      }
+    }
+  } catch (e) { console.error('人民网快速爬取失败:', e.message); }
+
+  // ② 作文网（名言警句）
+  try {
+    var zBuf = await fetchBuf('https://www.zuowen.com/sucai/mingyan/');
+    if (zBuf) {
+      var z$ = cheerio.load(decodeHtml(zBuf));
+      var zlinks = [];
+      z$('a[href]').each(function () {
+        var h = z$(this).attr('href') || '';
+        if (/\/e\/\d{8}\/[a-f0-9]+\.shtml/i.test(h)) {
+          var abs = /^https?:\/\//.test(h) ? h : 'https://www.zuowen.com' + (h.charAt(0) === '/' ? '' : '/') + h;
+          if (!seen[abs]) { seen[abs] = true; zlinks.push(abs); }
+        }
+      });
+      for (var j = 0; j < zlinks.length && j < 3; j++) {
+        var zaBuf = await fetchBuf(zlinks[j]);
+        if (!zaBuf) continue;
+        var za$ = cheerio.load(decodeHtml(zaBuf));
+        var ztitle = za$('h1').first().text().trim() || za$('title').text().trim().split(/[|_]/)[0].split('-作文网')[0].trim();
+        var zcontent = za$('.news_con, .content, .con').first().find('p').map(function () { return za$(this).text().trim(); }).get().filter(Boolean).join('\n');
+        if (zcontent.length < 120) {
+          zcontent = za$('p').map(function () { return za$(this).text().trim(); }).get().filter(function (t) { return t.length > 8; }).join('\n');
+        }
+        await addMaterial(ztitle, zcontent, '名言警句', ['名言警句'], '作文网', zlinks[j]);
+      }
+    }
+  } catch (e) { console.error('作文网快速爬取失败:', e.message); }
+
   return items;
 }
 
@@ -147,7 +190,7 @@ exports.handler = async function(event) {
   try {
     // POST /api/crawl
     if (method === 'POST' && path === '/crawl') {
-      var crawled = await miniCrawl();
+      var crawled = await quickCrawl();
       return json({ added: crawled.length, items: crawled });
     }
 
