@@ -126,6 +126,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <span class="logo">📚 语文素材库</span>
     <div style="display:flex;gap:4px;align-items:center">
       <span class="sync-status" id="syncStatus"><span class="sync-dot online" id="syncDot"></span> 云端</span>
+      <button class="btn btn-primary" id="topCrawlBtn" onclick="triggerCrawl()">🕷 抓取素材</button>
       <button class="btn btn-primary" onclick="openEdit()">＋ 新增</button>
       <button class="btn btn-icon" onclick="openModal('settings-modal')">⚙️</button>
     </div>
@@ -173,9 +174,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <p class="import-hint">⚠ 导入会合并到现有数据，不会覆盖</p>
       </div>
       <div class="settings-section">
-        <h4>🕷 智能爬取</h4>
-        <p class="settings-hint">从 B站等网站自动抓取高考作文素材</p>
-        <button class="btn btn-primary btn-block" id="crawlBtn" onclick="triggerCrawl()">🚀 从 B站爬取素材</button>
+        <h4>🕷 抓取素材</h4>
+        <p class="settings-hint">从人民网、作文网自动抓取作文素材</p>
+        <button class="btn btn-primary btn-block" id="crawlBtn" onclick="triggerCrawl()">🕷 抓取素材</button>
         <p id="crawlStatus" class="sync-status" style="display:none"></p>
       </div>
       <div class="settings-section">
@@ -282,22 +283,23 @@ async function cloudSync() {
 }
 
 async function triggerCrawl() {
-  var btn = document.getElementById('crawlBtn');
-  var st = document.getElementById('crawlStatus');
-  btn.disabled = true; btn.textContent = '爬取中...'; st.style.display = 'block'; st.textContent = '正在从B站抓取素材...';
+  var btn = document.getElementById('topCrawlBtn') || document.getElementById('crawlBtn');
+  var original = btn.textContent;
+  btn.disabled = true; btn.textContent = '抓取中...';
+  toast('正在抓取素材（人民网 + 作文网）…');
   try {
     var res = await fetch('/api/crawl', { method: 'POST' });
     var data = await res.json();
     if (data.added > 0) {
-      st.textContent = '成功抓取 ' + data.added + ' 篇素材！到待审核查看';
+      toast('成功抓取 ' + data.added + ' 篇，到「待审核」查看 ✅');
       loadPendingCount();
     } else {
-      st.textContent = '未找到新素材（需从中国IP访问，请用电脑运行爬取素材.bat）';
+      toast('没有新素材（可能都已存在）');
     }
   } catch(e) {
-    st.textContent = '爬取失败，请用电脑运行爬取素材.bat';
+    toast('抓取失败，请稍后重试');
   }
-  btn.disabled = false; btn.textContent = '🚀 从 B站爬取素材';
+  btn.disabled = false; btn.textContent = original;
 }
 
 async function forceCloudSync() { await cloudSync(); toast('同步完成'); }
