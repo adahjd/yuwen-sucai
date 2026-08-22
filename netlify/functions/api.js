@@ -130,12 +130,12 @@ async function quickCrawl() {
 
   // 作文网多子分类（都是可直接引用的真·素材）
   var SUBCATS = [
-    ['/sucai/mingyan/', '名言警句'],
+    ['/sucai/yilunsucai/', '议论文'],
+    ['/sucai/lunju/', '时事论据'],
     ['/sucai/mingren/', '人物事例'],
-    ['/sucai/zheli/', '哲理故事'],
     ['/sucai/diangu/', '历史典故'],
-    ['/sucai/duanluo/', '优美段落'],
-    ['/sucai/haocihaoju/', '好词好句']
+    ['/sucai/mingyan/', '名言警句'],
+    ['/sucai/zheli/', '哲理故事']
   ];
   for (var s = 0; s < SUBCATS.length && items.length < 10; s++) {
     var sub = SUBCATS[s];
