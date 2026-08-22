@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "cheerio": "^1.0.0",
+    "cheerio": "1.0.0-rc.12",
     "express": "^5.2.1",
     "pg": "^8.22.0"
   },
