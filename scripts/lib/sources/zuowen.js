@@ -10,14 +10,14 @@ const { cleanTitle } = require('../text');
 const NAME = '作文网';
 const BASE = 'https://www.zuowen.com';
 
+// 议论文导向：论据类素材（议论文素材/时事论据/人物/典故/名言/哲理）
 const SUBCATEGORIES = [
-  ['/sucai/mingyan/', '名言警句'],
-  ['/sucai/haocihaoju/', '好词好句'],
-  ['/sucai/duanluo/', '优美段落'],
-  ['/sucai/zheli/', '哲理故事'],
+  ['/sucai/yilunsucai/', '议论文'],
+  ['/sucai/lunju/', '时事论据'],
   ['/sucai/mingren/', '人物事例'],
-  ['/sucai/lunju/', '时事热点'],
-  ['/sucai/diangu/', '历史典故']
+  ['/sucai/diangu/', '历史典故'],
+  ['/sucai/mingyan/', '名言警句'],
+  ['/sucai/zheli/', '哲理故事']
 ];
 
 function extractContent($) {
