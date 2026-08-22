@@ -27,8 +27,10 @@ jobs:
       - name: Run crawler
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          # 可选：只跑指定数据源（逗号分隔），例如 SOURCES=人民网观点
+          # 可选：只跑指定数据源（逗号分隔），例如 SOURCES=作文网
           SOURCES: ${{ secrets.SOURCES }}
+          ZHIPU_API_KEY: ${{ secrets.ZHIPU_API_KEY }}
+          GLM_MODEL: glm-4-flash
         run: node scripts/crawl.js
 
       - name: Report failure
