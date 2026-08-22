@@ -111,6 +111,9 @@ async function quickCrawl() {
 
   async function addMaterial(title, content, category, tags, source, url) {
     if (!title || !content || content.length < 120) return;
+    var lines = content.split('\n').filter(function (l) { return l.trim().length > 10; });
+    if (lines.length < 3) return; // 有效内容少于3行视为垃圾/页脚
+    if (/eduu|E度网|首页|注册|登录|投稿|版权所有|联系我们/.test(title)) return;
     var hash = crypto.createHash('sha256').update(content, 'utf-8').digest('hex');
     var existing = await sql`SELECT id FROM materials WHERE content_hash = ${hash} OR (raw_url = ${url} AND raw_url <> '') LIMIT 1`;
     if (existing.length > 0) return;
