@@ -9,6 +9,7 @@ const db = require('./lib/db');
 const { ruleClassify } = require('./lib/classify');
 const { contentHash } = require('./lib/dedupe');
 const { SOURCES } = require('./lib/sources');
+const ai = require('./lib/ai');
 
 const DRY_RUN = process.env.DRY_RUN === '1' || process.env.DRY_RUN === 'true';
 
@@ -55,7 +56,23 @@ async function main() {
   }
 
   // 2) 纯规则分类
-  const classified = raw.map(ruleClassify);
+  let classified = raw.map(ruleClassify);
+
+  // 2.5) 可选 AI 增强（GLM-4-Flash 免费模型，配置 ZHIPU_API_KEY 后启用）
+  if (ai.enabled()) {
+    console.log('[AI] 使用 GLM-4 增强分类与适用主题标签...');
+    for (let i = 0; i < classified.length; i++) {
+      try {
+        const e = await ai.enhance(classified[i]);
+        if (e) {
+          if (e.title) classified[i].title = e.title;
+          if (e.category) classified[i].category = e.category;
+          classified[i].tags = [].concat(e.tags || [], classified[i].tags || [])
+            .filter((v, idx, a) => a.indexOf(v) === idx).slice(0, 5);
+        }
+      } catch (err) { /* 单条失败不影响整体 */ }
+    }
+  }
 
   // 3) 去重（本次运行内 + 数据库历史）并入库
   const seenHashes = new Set();
