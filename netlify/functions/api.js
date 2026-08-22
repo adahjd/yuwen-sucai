@@ -125,35 +125,20 @@ async function quickCrawl() {
     items.push({ title: title, len: content.length });
   }
 
-  // ① 人民网观点（时事热点）
-  try {
-    var listBuf = await fetchBuf('http://opinion.people.com.cn/');
-    if (listBuf) {
-      var $ = cheerio.load(new TextDecoder('utf-8').decode(listBuf));
-      var links = [];
-      $('a[href]').each(function () {
-        var h = $(this).attr('href') || '';
-        if (/n1\/\d{4}\/\d{4}\/c\d+-\d+\.html/.test(h)) {
-          var abs = /^https?:\/\//.test(h) ? h : 'http://opinion.people.com.cn' + (h.charAt(0) === '/' ? '' : '/') + h;
-          if (!seen[abs]) { seen[abs] = true; links.push(abs); }
-        }
-      });
-      for (var i = 0; i < links.length && i < 3; i++) {
-        var aBuf = await fetchBuf(links[i]);
-        if (!aBuf) continue;
-        var a$ = cheerio.load(new TextDecoder('utf-8').decode(aBuf));
-        var title = a$('h1').first().text().trim() || a$('h2').first().text().trim() || a$('title').text().trim();
-        title = title.split('--')[0].split('-人民网')[0].trim();
-        var content = a$('.rm_txt_con').find('p').map(function () { return a$(this).text().trim(); }).get().filter(Boolean).join('\n');
-        await addMaterial(title, content, '时事热点', ['时事热点', '时评'], '人民网观点', links[i]);
-      }
-    }
-  } catch (e) { console.error('人民网快速爬取失败:', e.message); }
-
-  // ② 作文网（名言警句）
-  try {
-    var zBuf = await fetchBuf('https://www.zuowen.com/sucai/mingyan/');
-    if (zBuf) {
+  // 作文网多子分类（都是可直接引用的真·素材）
+  var SUBCATS = [
+    ['/sucai/mingyan/', '名言警句'],
+    ['/sucai/mingren/', '人物事例'],
+    ['/sucai/zheli/', '哲理故事'],
+    ['/sucai/diangu/', '历史典故'],
+    ['/sucai/duanluo/', '优美段落'],
+    ['/sucai/haocihaoju/', '好词好句']
+  ];
+  for (var s = 0; s < SUBCATS.length && items.length < 10; s++) {
+    var sub = SUBCATS[s];
+    try {
+      var zBuf = await fetchBuf('https://www.zuowen.com' + sub[0]);
+      if (!zBuf) continue;
       var z$ = cheerio.load(decodeHtml(zBuf));
       var zlinks = [];
       z$('a[href]').each(function () {
@@ -163,19 +148,19 @@ async function quickCrawl() {
           if (!seen[abs]) { seen[abs] = true; zlinks.push(abs); }
         }
       });
-      for (var j = 0; j < zlinks.length && j < 3; j++) {
+      for (var j = 0; j < zlinks.length && j < 2 && items.length < 10; j++) {
         var zaBuf = await fetchBuf(zlinks[j]);
         if (!zaBuf) continue;
         var za$ = cheerio.load(decodeHtml(zaBuf));
         var ztitle = za$('h1').first().text().trim() || za$('title').text().trim().split(/[|_]/)[0].split('-作文网')[0].trim();
         var zcontent = za$('.news_con, .content, .con').first().find('p').map(function () { return za$(this).text().trim(); }).get().filter(Boolean).join('\n');
-        if (zcontent.length < 120) {
+        if (zcontent.length < 100) {
           zcontent = za$('p').map(function () { return za$(this).text().trim(); }).get().filter(function (t) { return t.length > 8; }).join('\n');
         }
-        await addMaterial(ztitle, zcontent, '名言警句', ['名言警句'], '作文网', zlinks[j]);
+        await addMaterial(ztitle, zcontent, sub[1], [sub[1]], '作文网', zlinks[j]);
       }
-    }
-  } catch (e) { console.error('作文网快速爬取失败:', e.message); }
+    } catch (e) { console.error('作文网' + sub[0] + '失败:', e.message); }
+  }
 
   return items;
 }
